@@ -32,9 +32,6 @@ Just push to GitHub — Render detects `render.yaml` automatically.
 ### After Deployment
 Your site will be live at: `https://your-app-name.onrender.com`
 
-## Admin Access
-- URL: `https://your-site.onrender.com/admin`
-- Password: `macmiller2026`
 
 ## ⚠️ Important Notes
 - **Free tier** spins down after 15 min of inactivity (first request takes ~30s)
