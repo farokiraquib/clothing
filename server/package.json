@@ -1,0 +1,21 @@
+{
+  "name": "mac-miller-server",
+  "version": "1.0.0",
+  "description": "Mac Miller Clothing Store API",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cloudinary": "^1.41.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.0",
+    "express": "^4.21.0",
+    "mongoose": "^9.4.1",
+    "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "uuid": "^9.0.0"
+  }
+}

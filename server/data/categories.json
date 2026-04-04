@@ -1,0 +1,41 @@
+[
+  {
+    "id": "men",
+    "name": "Men",
+    "image": "/uploads/efa39705-ed4a-45df-a26f-9025a19a558f.png",
+    "subcategories": [
+      "T-Shirts",
+      "Shirts",
+      "Jeans",
+      "Trousers",
+      "Hoodies",
+      "Jackets",
+      "Shorts"
+    ]
+  },
+  {
+    "id": "women",
+    "name": "Women",
+    "image": "",
+    "subcategories": [
+      "Tops",
+      "Dresses",
+      "Jeans",
+      "Skirts",
+      "Jackets",
+      "Activewear"
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Kids",
+    "image": "",
+    "subcategories": [
+      "T-Shirts",
+      "Shorts",
+      "Jeans",
+      "Hoodies",
+      "Dresses"
+    ]
+  }
+]

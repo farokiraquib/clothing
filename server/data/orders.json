@@ -1,0 +1,114 @@
+[
+  {
+    "id": "ORD-0C942C03",
+    "customer": {
+      "name": "raquib Farooqui",
+      "email": "farooquiraquib303@gmail.com",
+      "phone": "9422488099",
+      "address": "near safa masjid",
+      "city": "osmanabad",
+      "state": "Maharashtra",
+      "pincode": "413501"
+    },
+    "items": [
+      {
+        "productId": "prod-013",
+        "name": "Linen Blend Blazer",
+        "size": "M",
+        "color": "Light Beige",
+        "quantity": 2,
+        "price": 3999
+      }
+    ],
+    "subtotal": 7998,
+    "shipping": 0,
+    "total": 7998,
+    "status": "Processing",
+    "paymentStatus": "Pending",
+    "createdAt": "2026-04-03T20:33:14.290Z"
+  },
+  {
+    "id": "ORD-8E1D0A3A",
+    "customer": {
+      "name": "raquib Farooqui",
+      "email": "farooquiraquib303@gmail.com",
+      "phone": "9422488099",
+      "address": "near safa masjid",
+      "city": "osmanabad",
+      "state": "Maharashtra",
+      "pincode": "413501"
+    },
+    "items": [
+      {
+        "productId": "prod-013",
+        "name": "Linen Blend Blazer",
+        "size": "XS",
+        "color": "Light Beige",
+        "quantity": 20,
+        "price": 3999
+      }
+    ],
+    "subtotal": 79980,
+    "shipping": 0,
+    "total": 79980,
+    "status": "Delivered",
+    "paymentStatus": "Pending",
+    "createdAt": "2026-04-03T20:34:56.645Z"
+  },
+  {
+    "id": "ORD-89A72CDE",
+    "customer": {
+      "name": "raquib Farooqui",
+      "email": "farooquiraquib303@gmail.com",
+      "phone": "9422488099",
+      "address": "near safa masjid",
+      "city": "osmanabad",
+      "state": "Maharashtra",
+      "pincode": "413501"
+    },
+    "items": [
+      {
+        "productId": "prod-3f6e23b0",
+        "name": "test",
+        "size": "XS",
+        "color": "Default",
+        "quantity": 1,
+        "price": 455
+      }
+    ],
+    "subtotal": 455,
+    "shipping": 99,
+    "total": 554,
+    "status": "Cancelled",
+    "paymentStatus": "Pending",
+    "createdAt": "2026-04-03T20:58:50.285Z"
+  },
+  {
+    "id": "ORD-0A24D16F",
+    "customer": {
+      "name": "raquib Farooqui",
+      "email": "farooquiraquib303@gmail.com",
+      "phone": "9922976867",
+      "address": "near safa masjid",
+      "city": "osmanabad",
+      "state": "Maharashtra",
+      "pincode": "413501"
+    },
+    "items": [
+      {
+        "productId": "prod-0f863062",
+        "name": "test",
+        "size": "XS",
+        "color": "Default",
+        "quantity": 1,
+        "price": 122
+      }
+    ],
+    "subtotal": 122,
+    "shipping": 99,
+    "total": 221,
+    "status": "Processing",
+    "paymentStatus": "Pending",
+    "createdAt": "2026-04-03T21:27:44.672Z"
+  }
+]

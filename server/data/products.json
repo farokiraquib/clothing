@@ -1,0 +1,657 @@
+[
+  {
+    "id": "prod-001",
+    "name": "Air Max Pulse",
+    "brand": "nike",
+    "category": "men",
+    "subcategory": "Shoes",
+    "price": 13995,
+    "comparePrice": 15995,
+    "description": "The Air Max Pulse draws inspiration from the icons that came before it. Featuring airy mesh and a super-soft ride, it puts a fresh spin on what you know best.",
+    "sizes": [
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "colors": [
+      {
+        "name": "White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/products/nike-airmax-1.jpg"
+    ],
+    "stock": 25,
+    "featured": true,
+    "newArrival": true,
+    "rating": 4.5,
+    "reviews": 128,
+    "createdAt": "2026-03-15T10:00:00Z"
+  },
+  {
+    "id": "prod-002",
+    "name": "Ultraboost Light",
+    "brand": "adidas",
+    "category": "men",
+    "subcategory": "Shoes",
+    "price": 16999,
+    "comparePrice": 19999,
+    "description": "Experience epic energy with the Ultraboost Light. Our lightest Ultraboost ever, made in part with Parley Ocean Plastic.",
+    "sizes": [
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "colors": [
+      {
+        "name": "Core Black",
+        "hex": "#1A1A1A"
+      },
+      {
+        "name": "Cloud White",
+        "hex": "#F5F5F5"
+      }
+    ],
+    "images": [
+      "/products/adidas-ultraboost-1.jpg"
+    ],
+    "stock": 18,
+    "featured": true,
+    "newArrival": false,
+    "rating": 4.7,
+    "reviews": 256,
+    "createdAt": "2026-03-10T10:00:00Z"
+  },
+  {
+    "id": "prod-003",
+    "name": "Classic Slim Fit Tee",
+    "brand": "zara",
+    "category": "men",
+    "subcategory": "T-Shirts",
+    "price": 1490,
+    "comparePrice": null,
+    "description": "Essential slim-fit crew neck t-shirt in premium cotton. Perfect for everyday casual wear with a modern silhouette.",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      {
+        "name": "White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Navy",
+        "hex": "#1B2A4A"
+      },
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/products/zara-tee-1.jpg"
+    ],
+    "stock": 50,
+    "featured": false,
+    "newArrival": true,
+    "rating": 4.2,
+    "reviews": 89,
+    "createdAt": "2026-03-20T10:00:00Z"
+  },
+  {
+    "id": "prod-004",
+    "name": "501 Original Fit Jeans",
+    "brand": "levis",
+    "category": "men",
+    "subcategory": "Jeans",
+    "price": 4999,
+    "comparePrice": 5999,
+    "description": "The original blue jean since 1873. The iconic straight fit with signature button fly. A timeless classic that never goes out of style.",
+    "sizes": [
+      "28",
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "colors": [
+      {
+        "name": "Medium Indigo",
+        "hex": "#3D5B8C"
+      },
+      {
+        "name": "Dark Wash",
+        "hex": "#1C2841"
+      }
+    ],
+    "images": [
+      "/products/levis-501-1.jpg"
+    ],
+    "stock": 35,
+    "featured": true,
+    "newArrival": false,
+    "rating": 4.6,
+    "reviews": 412,
+    "createdAt": "2026-02-15T10:00:00Z"
+  },
+  {
+    "id": "prod-005",
+    "name": "Essentials Hoodie",
+    "brand": "hm",
+    "category": "men",
+    "subcategory": "Hoodies",
+    "price": 2499,
+    "comparePrice": 2999,
+    "description": "Relaxed-fit hoodie in soft sweatshirt fabric with a lined drawstring hood, kangaroo pocket, and ribbed cuffs and hem.",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "colors": [
+      {
+        "name": "Grey Melange",
+        "hex": "#B0B0B0"
+      },
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      },
+      {
+        "name": "Sage Green",
+        "hex": "#8FA98F"
+      }
+    ],
+    "images": [
+      "/products/hm-hoodie-1.jpg"
+    ],
+    "stock": 42,
+    "featured": true,
+    "newArrival": true,
+    "rating": 4.3,
+    "reviews": 167,
+    "createdAt": "2026-03-25T10:00:00Z"
+  },
+  {
+    "id": "prod-006",
+    "name": "Fleece Zip Jacket",
+    "brand": "north-face",
+    "category": "men",
+    "subcategory": "Jackets",
+    "price": 8999,
+    "comparePrice": 10999,
+    "description": "Stay warm in style with this full-zip fleece jacket. Features a stand-up collar, zip pockets, and a relaxed fit perfect for layering.",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      {
+        "name": "TNF Black",
+        "hex": "#1A1A1A"
+      },
+      {
+        "name": "Utility Brown",
+        "hex": "#8B6F47"
+      }
+    ],
+    "images": [
+      "/products/northface-fleece-1.jpg"
+    ],
+    "stock": 15,
+    "featured": false,
+    "newArrival": true,
+    "rating": 4.8,
+    "reviews": 93,
+    "createdAt": "2026-03-28T10:00:00Z"
+  },
+  {
+    "id": "prod-007",
+    "name": "CK Logo T-Shirt",
+    "brand": "calvin-klein",
+    "category": "women",
+    "subcategory": "Tops",
+    "price": 3499,
+    "comparePrice": 3999,
+    "description": "Relaxed fit crewneck t-shirt with iconic Calvin Klein logo print. Made from soft organic cotton for all-day comfort.",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      {
+        "name": "Bright White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "CK Black",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/products/ck-logo-tee-1.jpg"
+    ],
+    "stock": 30,
+    "featured": true,
+    "newArrival": false,
+    "rating": 4.4,
+    "reviews": 78,
+    "createdAt": "2026-03-12T10:00:00Z"
+  },
+  {
+    "id": "prod-008",
+    "name": "Floral Midi Dress",
+    "brand": "zara",
+    "category": "women",
+    "subcategory": "Dresses",
+    "price": 3990,
+    "comparePrice": 4990,
+    "description": "Flowing midi dress with a delicate floral print. Features a V-neckline, short puff sleeves, and a flattering A-line silhouette.",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      {
+        "name": "Ivory Floral",
+        "hex": "#F5F0E8"
+      },
+      {
+        "name": "Dusty Rose",
+        "hex": "#C9A0A0"
+      }
+    ],
+    "images": [
+      "/products/zara-dress-1.jpg"
+    ],
+    "stock": 22,
+    "featured": true,
+    "newArrival": true,
+    "rating": 4.6,
+    "reviews": 134,
+    "createdAt": "2026-03-22T10:00:00Z"
+  },
+  {
+    "id": "prod-009",
+    "name": "Tommy Flag Polo",
+    "brand": "tommy-hilfiger",
+    "category": "men",
+    "subcategory": "Shirts",
+    "price": 4499,
+    "comparePrice": null,
+    "description": "Classic regular-fit polo shirt in stretch cotton piqué. Embroidered Tommy Hilfiger flag logo at chest. A wardrobe essential.",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "colors": [
+      {
+        "name": "Sky Captain",
+        "hex": "#1B2838"
+      },
+      {
+        "name": "White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Primary Red",
+        "hex": "#C62828"
+      }
+    ],
+    "images": [
+      "/products/tommy-polo-1.jpg"
+    ],
+    "stock": 38,
+    "featured": false,
+    "newArrival": false,
+    "rating": 4.5,
+    "reviews": 201,
+    "createdAt": "2026-02-20T10:00:00Z"
+  },
+  {
+    "id": "prod-010",
+    "name": "RS-X Reinvention",
+    "brand": "puma",
+    "category": "women",
+    "subcategory": "Shoes",
+    "price": 9999,
+    "comparePrice": 11999,
+    "description": "Bold chunky sneakers with retro-futuristic design. Features mesh and leather upper with RS cushioning for supreme comfort.",
+    "sizes": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "colors": [
+      {
+        "name": "Puma White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Peach Smoothie",
+        "hex": "#F0C4A8"
+      }
+    ],
+    "images": [
+      "/products/puma-rsx-1.jpg"
+    ],
+    "stock": 20,
+    "featured": true,
+    "newArrival": true,
+    "rating": 4.3,
+    "reviews": 67,
+    "createdAt": "2026-03-18T10:00:00Z"
+  },
+  {
+    "id": "prod-011",
+    "name": "Tech Fleece Joggers",
+    "brand": "nike",
+    "category": "men",
+    "subcategory": "Trousers",
+    "price": 7495,
+    "comparePrice": 8995,
+    "description": "Nike Tech Fleece Joggers reimagine the classic silhouette with a slim, tapered fit. Lightweight warmth without the bulk.",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      {
+        "name": "Dark Heather",
+        "hex": "#4A4A4A"
+      },
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/products/nike-joggers-1.jpg"
+    ],
+    "stock": 28,
+    "featured": false,
+    "newArrival": true,
+    "rating": 4.7,
+    "reviews": 345,
+    "createdAt": "2026-03-26T10:00:00Z"
+  },
+  {
+    "id": "prod-012",
+    "name": "UA HeatGear Tee",
+    "brand": "under-armour",
+    "category": "men",
+    "subcategory": "T-Shirts",
+    "price": 2499,
+    "comparePrice": 2999,
+    "description": "Ultra-tight, second-skin fit. HeatGear fabric wicks sweat and dries fast. Anti-odor technology prevents the growth of odor-causing microbes.",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "colors": [
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      },
+      {
+        "name": "Royal Blue",
+        "hex": "#1E40AF"
+      },
+      {
+        "name": "White",
+        "hex": "#FFFFFF"
+      }
+    ],
+    "images": [
+      "/products/ua-heatgear-1.jpg"
+    ],
+    "stock": 45,
+    "featured": false,
+    "newArrival": false,
+    "rating": 4.4,
+    "reviews": 189,
+    "createdAt": "2026-02-28T10:00:00Z"
+  },
+  {
+    "id": "prod-013",
+    "name": "Linen Blend Blazer",
+    "brand": "hm",
+    "category": "women",
+    "subcategory": "Jackets",
+    "price": 3999,
+    "comparePrice": 4999,
+    "description": "Single-breasted blazer in a linen and viscose blend. Notch lapels, front button, and welt front pockets. Relaxed fit.",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      {
+        "name": "Light Beige",
+        "hex": "#D4C5A9"
+      },
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/products/hm-blazer-1.jpg"
+    ],
+    "stock": 16,
+    "featured": true,
+    "newArrival": true,
+    "rating": 4.5,
+    "reviews": 56,
+    "createdAt": "2026-03-30T10:00:00Z"
+  },
+  {
+    "id": "prod-014",
+    "name": "Kids Trefoil Hoodie",
+    "brand": "adidas",
+    "category": "kids",
+    "subcategory": "Hoodies",
+    "price": 2999,
+    "comparePrice": 3499,
+    "description": "A cozy hoodie for young trendsetters. Features the iconic Trefoil logo, kangaroo pocket, and soft fleece lining.",
+    "sizes": [
+      "4-5Y",
+      "6-7Y",
+      "8-9Y",
+      "10-11Y",
+      "12-13Y"
+    ],
+    "colors": [
+      {
+        "name": "Black",
+        "hex": "#1A1A1A"
+      },
+      {
+        "name": "Night Indigo",
+        "hex": "#2C3E6B"
+      }
+    ],
+    "images": [
+      "/products/adidas-kids-hoodie-1.jpg"
+    ],
+    "stock": 30,
+    "featured": false,
+    "newArrival": true,
+    "rating": 4.6,
+    "reviews": 42,
+    "createdAt": "2026-03-27T10:00:00Z"
+  },
+  {
+    "id": "prod-015",
+    "name": "High Waist Skinny Jeans",
+    "brand": "levis",
+    "category": "women",
+    "subcategory": "Jeans",
+    "price": 4499,
+    "comparePrice": 5499,
+    "description": "The 721 High Rise Skinny sits high up on the waist with a sleek, slim fit from hip to ankle. Made with stretch denim for all-day comfort.",
+    "sizes": [
+      "24",
+      "26",
+      "28",
+      "30",
+      "32"
+    ],
+    "colors": [
+      {
+        "name": "Blue Story",
+        "hex": "#3B5998"
+      },
+      {
+        "name": "Black Peony",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/products/levis-721-1.jpg"
+    ],
+    "stock": 33,
+    "featured": true,
+    "newArrival": false,
+    "rating": 4.5,
+    "reviews": 287,
+    "createdAt": "2026-03-05T10:00:00Z"
+  },
+  {
+    "id": "prod-016",
+    "name": "Kids' Jogger Set",
+    "brand": "nike",
+    "category": "kids",
+    "subcategory": "T-Shirts",
+    "price": 3495,
+    "comparePrice": 3995,
+    "description": "Two-piece set including a comfortable crewneck tee and matching jogger pants. Perfect for active kids on the go.",
+    "sizes": [
+      "3-4Y",
+      "5-6Y",
+      "7-8Y",
+      "9-10Y"
+    ],
+    "colors": [
+      {
+        "name": "Game Royal",
+        "hex": "#2563EB"
+      },
+      {
+        "name": "Smoke Grey",
+        "hex": "#9E9E9E"
+      }
+    ],
+    "images": [
+      "/products/nike-kids-set-1.jpg"
+    ],
+    "stock": 25,
+    "featured": false,
+    "newArrival": true,
+    "rating": 4.4,
+    "reviews": 58,
+    "createdAt": "2026-03-29T10:00:00Z"
+  },
+  {
+    "id": "prod-3f6e23b0",
+    "name": "test",
+    "brand": "puma",
+    "category": "kids",
+    "subcategory": "T-Shirts",
+    "price": 455,
+    "comparePrice": 999,
+    "description": "nothing",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      {
+        "name": "Default",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/uploads/afdcbefe-8aa7-48e4-bf03-390cd786e231.png",
+      "/uploads/8fa9e1b1-cc8a-49fb-84b3-e494411df032.png",
+      "/uploads/97d2e39b-c97d-479b-ad59-462798204329.png",
+      "/uploads/350c65bc-0a3b-4183-b197-3c0aea5817e0.png",
+      "/uploads/9a25f4f8-4ef8-4268-bd91-7d650d5b1e5c.png"
+    ],
+    "stock": 0,
+    "featured": false,
+    "newArrival": true,
+    "rating": 0,
+    "reviews": 0,
+    "createdAt": "2026-04-03T20:46:08.858Z"
+  },
+  {
+    "id": "prod-0f863062",
+    "name": "test",
+    "brand": "raquib",
+    "category": "men",
+    "subcategory": "Jeans",
+    "price": 122,
+    "comparePrice": 1000,
+    "description": "11",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      {
+        "name": "Default",
+        "hex": "#1A1A1A"
+      }
+    ],
+    "images": [
+      "/uploads/fb40b0dc-fed7-41b3-afcb-b947e5945922.png",
+      "/uploads/b3aca663-3875-454c-993f-6825605377de.png",
+      "/uploads/194a70e9-824c-4c80-ba33-d4741ddeeb9d.png"
+    ],
+    "stock": 0,
+    "featured": false,
+    "newArrival": false,
+    "rating": 0,
+    "reviews": 0,
+    "createdAt": "2026-04-03T21:26:52.808Z"
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "nike",
+    "name": "Nike",
+    "logo": "/brands/nike.png",
+    "description": "Just Do It — World's leading sportswear brand"
+  },
+  {
+    "id": "adidas",
+    "name": "Adidas",
+    "logo": "/brands/adidas.png",
+    "description": "Impossible Is Nothing — Premium sportswear & lifestyle"
+  },
+  {
+    "id": "puma",
+    "name": "Puma",
+    "logo": "/brands/puma.png",
+    "description": "Forever Faster — Sport-inspired fashion"
+  },
+  {
+    "id": "zara",
+    "name": "Zara",
+    "logo": "/brands/zara.png",
+    "description": "Trendsetting fast fashion from Spain"
+  },
+  {
+    "id": "hm",
+    "name": "H&M",
+    "logo": "/brands/hm.png",
+    "description": "Fashion and quality at the best price"
+  },
+  {
+    "id": "levis",
+    "name": "Levi's",
+    "logo": "/brands/levis.png",
+    "description": "Iconic American denim since 1853"
+  },
+  {
+    "id": "calvin-klein",
+    "name": "Calvin Klein",
+    "logo": "/brands/calvin-klein.png",
+    "description": "Modern premium casual & underwear"
+  },
+  {
+    "id": "tommy-hilfiger",
+    "name": "Tommy Hilfiger",
+    "logo": "/brands/tommy-hilfiger.png",
+    "description": "Classic American cool style"
+  },
+  {
+    "id": "under-armour",
+    "name": "Under Armour",
+    "logo": "/brands/under-armour.png",
+    "description": "Performance apparel & activewear"
+  },
+  {
+    "id": "north-face",
+    "name": "The North Face",
+    "logo": "/brands/north-face.png",
+    "description": "Never Stop Exploring — Premium outerwear"
+  },
+  {
+    "id": "raquib",
+    "name": "raquib",
+    "logo": "",
+    "description": ""
+  }
+]

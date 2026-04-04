@@ -1,0 +1,13 @@
+{
+  "name": "mac-miller-store",
+  "version": "1.0.0",
+  "description": "Mac Miller Clothing Store — Full Stack E-Commerce",
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm run build",
+    "start": "cd server && node server.js",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "deploy": "npm run install:all && npm run build && npm start"
+  }
+}
