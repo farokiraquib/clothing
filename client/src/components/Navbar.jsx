@@ -174,46 +174,47 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileOpen && (
-          <div className="mobile-menu">
-            <div className="mobile-menu-search">
-              <input
-                type="text" placeholder="Search products..."
-                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {showSearch && searchResults.length > 0 && (
-                <div className="search-results" style={{position: 'static', marginTop: 8}}>
-                  {searchResults.map(p => (
-                    <div key={p.id} className="search-result-item" onClick={() => { handleResultClick(p.id); setMobileOpen(false); }}>
-                      <div className="search-result-img" style={{background: 'var(--bg-secondary)'}} />
-                      <div className="search-result-info">
-                        <h4>{p.name}</h4><p>{formatPrice(p.price)}</p>
-                      </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="mobile-menu">
+          <div className="mobile-menu-search">
+            <input
+              type="text" placeholder="Search products..."
+              value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {showSearch && searchResults.length > 0 && (
+              <div className="search-results" style={{position: 'static', marginTop: 8}}>
+                {searchResults.map(p => (
+                  <div key={p.id} className="search-result-item" onClick={() => { handleResultClick(p.id); setMobileOpen(false); }}>
+                    <div className="search-result-img" style={{background: 'var(--bg-secondary)'}} />
+                    <div className="search-result-info">
+                      <h4>{p.name}</h4><p>{formatPrice(p.price)}</p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <NavLink to="/"                                     onClick={() => setMobileOpen(false)}>Home</NavLink>
-            <Link to="/shop"             className={isShopActive()       ? 'active' : ''} onClick={() => setMobileOpen(false)}>Shop All</Link>
-            <Link to="/shop?category=men"    className={isShopActive('men')    ? 'active' : ''} onClick={() => setMobileOpen(false)}>Men</Link>
-            <Link to="/shop?category=women"  className={isShopActive('women')  ? 'active' : ''} onClick={() => setMobileOpen(false)}>Women</Link>
-            <Link to="/shop?category=kids"   className={isShopActive('kids')   ? 'active' : ''} onClick={() => setMobileOpen(false)}>Kids</Link>
-            <NavLink to="/about"   onClick={() => setMobileOpen(false)}>About</NavLink>
-            <NavLink to="/contact" onClick={() => setMobileOpen(false)}>Contact</NavLink>
-            <NavLink to="/track-order" onClick={() => setMobileOpen(false)}>Track Order</NavLink>
-            {user ? (
-              <>
-                <NavLink to="/profile" onClick={() => setMobileOpen(false)}>My Account</NavLink>
-                <button onClick={() => { handleLogout(); setMobileOpen(false); }} style={{ textAlign: 'left', padding: '16px', fontSize: '1.125rem', color: 'var(--error)' }}>Sign Out</button>
-              </>
-            ) : (
-              <button onClick={() => { openLogin(); setMobileOpen(false); }} style={{ textAlign: 'left', padding: '16px', fontSize: '1.125rem', fontWeight: 600, color: 'var(--accent)' }}>Sign In / Register</button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        )}
-      </nav>
+          <NavLink to="/"                                     onClick={() => setMobileOpen(false)}>Home</NavLink>
+          <Link to="/shop"             className={isShopActive()       ? 'active' : ''} onClick={() => setMobileOpen(false)}>Shop All</Link>
+          <Link to="/shop?category=men"    className={isShopActive('men')    ? 'active' : ''} onClick={() => setMobileOpen(false)}>Men</Link>
+          <Link to="/shop?category=women"  className={isShopActive('women')  ? 'active' : ''} onClick={() => setMobileOpen(false)}>Women</Link>
+          <Link to="/shop?category=kids"   className={isShopActive('kids')   ? 'active' : ''} onClick={() => setMobileOpen(false)}>Kids</Link>
+          <NavLink to="/about"   onClick={() => setMobileOpen(false)}>About</NavLink>
+          <NavLink to="/contact" onClick={() => setMobileOpen(false)}>Contact</NavLink>
+          <NavLink to="/track-order" onClick={() => setMobileOpen(false)}>Track Order</NavLink>
+          {user ? (
+            <>
+              <NavLink to="/profile" onClick={() => setMobileOpen(false)}>My Account</NavLink>
+              <button onClick={() => { handleLogout(); setMobileOpen(false); }} style={{ textAlign: 'left', padding: '16px', fontSize: '1.125rem', color: 'var(--error)' }}>Sign Out</button>
+            </>
+          ) : (
+            <button onClick={() => { openLogin(); setMobileOpen(false); }} style={{ textAlign: 'left', padding: '16px', fontSize: '1.125rem', fontWeight: 600, color: 'var(--accent)' }}>Sign In / Register</button>
+          )}
+        </div>
+      )}
 
       <AuthModal isOpen={authModal} onClose={() => setAuthModal(false)} defaultTab={authTab} />
     </>
