@@ -21,9 +21,11 @@ export default function ProductDetail() {
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
   const [reviewStatus, setReviewStatus] = useState({ error: '', success: '' });
+  const [cartAdded, setCartAdded] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setCartAdded(false);
     getProduct(id).then(p => {
       setProduct(p);
       setSelectedSize(p.sizes?.[0] || '');
@@ -61,6 +63,8 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (!selectedSize) return;
     addToCart(product, selectedSize, selectedColor, quantity);
+    setCartAdded(true);
+    setTimeout(() => setCartAdded(false), 1800);
   };
 
   const nextImage = () => {
@@ -163,6 +167,10 @@ export default function ProductDetail() {
                 <button className="btn btn-primary btn-lg" disabled style={{background: '#ccc', cursor: 'not-allowed', color: '#666', border: 'none'}}>
                   Sold Out
                 </button>
+              ) : cartAdded ? (
+                <button className="btn btn-primary btn-lg animate-pop" style={{background:'var(--success)', pointerEvents:'none'}}>
+                  ✓ Added to Cart!
+                </button>
               ) : (
                 <button className="btn btn-primary btn-lg" onClick={handleAddToCart}>
                   <ShoppingBag size={18} /> Add to Cart
@@ -232,7 +240,14 @@ export default function ProductDetail() {
                 e.preventDefault();
                 setReviewStatus({ error:'', success:'' });
                 try {
-                  const newReview = await submitReview({ productId: product.id, ...reviewForm });
+                  const payload = {
+                    productId: product.id,
+                    customerName: reviewForm.name,
+                    customerEmail: reviewForm.email,
+                    rating: reviewForm.rating,
+                    comment: reviewForm.comment
+                  };
+                  const newReview = await submitReview(payload);
                   setReviews([newReview, ...reviews]);
                   setReviewStatus({ error: '', success: 'Review submitted successfully!' });
                   setReviewForm({ name:'', email:'', rating:5, comment:'' });

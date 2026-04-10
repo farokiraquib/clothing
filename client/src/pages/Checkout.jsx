@@ -37,11 +37,18 @@ export default function Checkout() {
   if (orderPlaced) return (
     <div className="checkout-page page-enter">
       <div className="container" style={{textAlign:'center',padding:'80px 0'}}>
-        <CheckCircle size={64} style={{color:'var(--success)', marginBottom:24}} />
-        <h1 style={{marginBottom:8}}>Order Placed!</h1>
+        <div style={{width: 80, height: 80, margin: '0 auto 24px', background: 'var(--success)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'}} className="animate-pop">
+           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+             <polyline points="20 6 9 17 4 12" className="animate-success-draw" />
+           </svg>
+        </div>
+        <h1 style={{marginBottom:8}} className="animate-pop">Order Placed!</h1>
         <p style={{color:'var(--text-secondary)',fontSize:18,marginBottom:8}}>Thank you for shopping with Mac Miller.</p>
         <p style={{color:'var(--text-secondary)',marginBottom:32}}>Order ID: <strong>{orderId}</strong></p>
-        <Link to="/shop" className="btn btn-primary btn-lg">Continue Shopping</Link>
+        <div style={{display:'flex', gap:12, justifyContent:'center'}}>
+          <Link to="/shop" className="btn btn-outline btn-lg">Continue Shopping</Link>
+          <Link to={`/track-order?id=${orderId}`} className="btn btn-primary btn-lg">Track Order</Link>
+        </div>
       </div>
     </div>
   );

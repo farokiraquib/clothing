@@ -16,6 +16,24 @@ router.get('/', adminAuth, async (req, res) => {
   }
 });
 
+// GET /api/orders/track — Public Tracking
+router.get('/track', async (req, res) => {
+  try {
+    const { orderId, email } = req.query;
+    if (!orderId || !email) return res.status(400).json({ error: 'Order ID and email are required' });
+
+    const order = await Order.findOne({ 
+      id: orderId.trim(), 
+      'customer.email': { $regex: new RegExp(`^${email.trim()}$`, 'i') } 
+    });
+
+    if (!order) return res.status(404).json({ error: 'Order not found with these details' });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to track order' });
+  }
+});
+
 // GET /api/orders/:id
 router.get('/:id', async (req, res) => {
   try {

@@ -72,6 +72,9 @@ export const getOrders = () =>
 
 export const getOrder = (id) => request(`/orders/${id}`);
 
+export const trackOrder = (orderId, email) =>
+  request(`/orders/track?orderId=${encodeURIComponent(orderId)}&email=${encodeURIComponent(email)}`);
+
 export const updateOrderStatus = (id, data) =>
   request(`/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
 

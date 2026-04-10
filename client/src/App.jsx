@@ -12,6 +12,7 @@ import Wishlist from './pages/Wishlist';
 import Checkout from './pages/Checkout';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import TrackOrder from './pages/TrackOrder';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
@@ -59,6 +60,7 @@ function App() {
                       <Route path="/checkout" element={<Checkout />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/contact" element={<Contact />} />
+                      <Route path="/track-order" element={<TrackOrder />} />
                     </Routes>
                   </main>
                   <Footer />

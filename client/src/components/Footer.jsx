@@ -32,6 +32,7 @@ export default function Footer() {
           </div>
           <div className="footer-col">
             <h4>Help</h4>
+            <Link to="/track-order">Track Order</Link>
             <a href="#">Shipping Info</a>
             <a href="#">Returns</a>
             <a href="#">Size Guide</a>

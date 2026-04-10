@@ -65,6 +65,7 @@ export default function Navbar() {
           <Link to="/shop?category=kids" className={isShopActive('kids') ? 'active' : ''}>Kids</Link>
           <NavLink to="/about">About</NavLink>
           <NavLink to="/contact">Contact</NavLink>
+          <NavLink to="/track-order">Track Order</NavLink>
         </div>
         <div className="navbar-search" ref={searchRef}>
           <Search size={16} className="navbar-search-icon" />
@@ -91,11 +92,11 @@ export default function Navbar() {
         <div className="navbar-actions">
           <Link to="/wishlist" className="navbar-action-btn" title="Wishlist">
             <Heart size={20} />
-            {wishlistCount > 0 && <span className="navbar-badge">{wishlistCount}</span>}
+            {wishlistCount > 0 && <span key={`w-${wishlistCount}`} className="navbar-badge animate-pop">{wishlistCount}</span>}
           </Link>
           <Link to="/cart" className="navbar-action-btn" title="Cart">
             <ShoppingBag size={20} />
-            {cartCount > 0 && <span className="navbar-badge">{cartCount}</span>}
+            {cartCount > 0 && <span key={`c-${cartCount}`} className="navbar-badge animate-pop">{cartCount}</span>}
           </Link>
           <Link to="/admin" className="navbar-action-btn hide-mobile" title="Admin">
             <User size={20} />
