@@ -94,7 +94,22 @@ export const getSettings = () => request('/admin/settings');
 export const updateSettings = (data) =>
   request('/admin/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
 
-// Reviews
+// Auth / User
+export const registerUser = (name, email, password) =>
+  request('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password }) });
+
+export const loginUser = (email, password) =>
+  request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+
+export const getMyProfile = (token) =>
+  request('/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+
+export const updateMyProfile = (token, data) =>
+  request('/auth/me', { method: 'PUT', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(data) });
+
+export const getMyOrders = (token) =>
+  request('/auth/orders', { headers: { Authorization: `Bearer ${token}` } });
+
 export const getReviews = (productId) => request(`/reviews/${productId}`);
 export const submitReview = (data) =>
   request('/reviews', { method: 'POST', body: JSON.stringify(data) });

@@ -1,15 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { CreditCard, CheckCircle } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
 import { createOrder } from '../api';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
+  const { user } = useUser();
   const navigate = useNavigate();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'' });
+
+  // Auto-fill from user profile
+  useEffect(() => {
+    if (user) {
+      setForm(prev => ({
+        ...prev,
+        name:    user.name    || '',
+        email:   user.email   || '',
+        phone:   user.phone   || '',
+        address: user.address?.line1   || '',
+        city:    user.address?.city    || '',
+        state:   user.address?.state   || '',
+        pincode: user.address?.pincode || '',
+      }));
+    }
+  }, [user]);
 
   const formatPrice = (p) => `₹${p.toLocaleString('en-IN')}`;
   const shipping = cartTotal > 1999 ? 0 : 99;

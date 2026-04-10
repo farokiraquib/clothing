@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
+import { UserProvider } from './context/UserContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -13,6 +14,7 @@ import Checkout from './pages/Checkout';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import TrackOrder from './pages/TrackOrder';
+import Profile from './pages/Profile';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
@@ -32,8 +34,9 @@ import './styles/admin.css';
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
+      <UserProvider>
+        <CartProvider>
+          <WishlistProvider>
           <Router>
             <Routes>
               {/* Admin routes (no navbar/footer) */}
@@ -61,6 +64,7 @@ function App() {
                       <Route path="/about" element={<About />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/track-order" element={<TrackOrder />} />
+                      <Route path="/profile" element={<Profile />} />
                     </Routes>
                   </main>
                   <Footer />
@@ -68,8 +72,9 @@ function App() {
               } />
             </Routes>
           </Router>
-        </WishlistProvider>
-      </CartProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </UserProvider>
     </AuthProvider>
   );
 }
