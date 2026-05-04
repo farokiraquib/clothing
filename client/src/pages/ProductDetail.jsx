@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Heart, Minus, Plus, Star, ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Heart, Minus, Plus, Star, ShoppingBag, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
@@ -15,8 +15,24 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const navigate = useNavigate();
+
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) nextImage();
+    if (distance < -50) prevImage();
+  };
 
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
@@ -59,6 +75,7 @@ export default function ProductDetail() {
   const formatPrice = (p) => `₹${p.toLocaleString('en-IN')}`;
   const discount = product.comparePrice ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : 0;
   const inWishlist = isInWishlist(product.id);
+  const inCart = cart.some(item => item.id === product.id);
 
   const handleAddToCart = () => {
     if (!selectedSize) return;
@@ -85,7 +102,7 @@ export default function ProductDetail() {
         </Link>
         <div className="product-detail-grid">
           <div className="product-gallery">
-            <div className="product-gallery-main" style={{position:'relative'}}>
+            <div className="product-gallery-main" style={{position:'relative'}} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEndHandler}>
               {product.images?.[mainImageIndex]?.startsWith('/uploads') || product.images?.[mainImageIndex]?.startsWith('http') ? (
                 <img src={product.images[mainImageIndex].startsWith('http') ? product.images[mainImageIndex] : `${API_ROOT}${product.images[mainImageIndex]}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
               ) : (
@@ -166,6 +183,10 @@ export default function ProductDetail() {
               {product.stock === 0 ? (
                 <button className="btn btn-primary btn-lg" disabled style={{background: '#ccc', cursor: 'not-allowed', color: '#666', border: 'none'}}>
                   Sold Out
+                </button>
+              ) : inCart ? (
+                <button className="btn btn-primary btn-lg" style={{background: 'var(--text-primary)'}} onClick={() => navigate('/cart')}>
+                  Go to Cart <ArrowRight size={18} />
                 </button>
               ) : cartAdded ? (
                 <button className="btn btn-primary btn-lg animate-pop" style={{background:'var(--success)', pointerEvents:'none'}}>

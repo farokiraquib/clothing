@@ -240,6 +240,39 @@ export default function Home() {
         </div>
       </section>
 
+      {/* New Arrivals */}
+      {newArrivals.length > 0 && (
+        <section className="section" style={{ paddingTop: 'var(--space-12)' }}>
+          <div className="container">
+            <h2 style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1A202C', marginBottom: 'var(--space-8)' }}>
+              New Arrivals
+            </h2>
+            
+            <div style={{ position: 'relative' }}>
+              {/* Left Arrow */}
+              <button 
+                onClick={() => scrollProducts(-1)}
+                style={{ position: 'absolute', left: 0, top: '40%', transform: 'translate(-50%, -50%)', zIndex: 10, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', border: '1px solid #ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}
+              >
+                <ChevronLeft size={24} color="#333" />
+              </button>
+
+              <div className="product-scroll" ref={scrollRef}>
+                {newArrivals.map(p => <ProductCard key={p.id} product={p} />)}
+              </div>
+
+              {/* Right Arrow */}
+              <button 
+                onClick={() => scrollProducts(1)}
+                style={{ position: 'absolute', right: 0, top: '40%', transform: 'translate(50%, -50%)', zIndex: 10, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', border: '1px solid #ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}
+              >
+                <ChevronRight size={24} color="#333" />
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Categories */}
       <section className="section">
         <div className="container">
@@ -297,29 +330,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* New Arrivals */}
-      {newArrivals.length > 0 && (
-        <section className="section">
-          <div className="container">
-            <div className="section-header">
-              <div>
-                <div className="section-eyebrow"><Clock size={14} /> Just Dropped</div>
-                <h2 className="section-title">New Arrivals</h2>
-              </div>
-              <div className="scroll-controls">
-                <button className="scroll-btn" onClick={() => scrollProducts(-1)}><ChevronLeft size={20} /></button>
-                <button className="scroll-btn" onClick={() => scrollProducts(1)}><ChevronRight size={20} /></button>
-                <Link to="/shop?newArrival=true" className="btn btn-outline" style={{ marginLeft: 8 }}>
-                  See All <ArrowRight size={16} />
-                </Link>
-              </div>
-            </div>
-            <div className="product-scroll" ref={scrollRef}>
-              {newArrivals.map(p => <ProductCard key={p.id} product={p} />)}
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* CTA Banner */}
       <section className="cta-banner">

@@ -63,7 +63,7 @@ export default function Profile() {
       <div className="container" style={{ maxWidth: 900 }}>
 
         {/* Profile Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 32, padding: '24px 28px', background: 'var(--surface-bg)', borderRadius: 16, border: '1px solid var(--border)' }}>
+        <div className="profile-header">
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {initials}
           </div>
@@ -110,7 +110,7 @@ export default function Profile() {
                   <Check size={15} /> Profile updated successfully!
                 </div>
               )}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="profile-grid">
                 {[
                   { label: 'Full Name', field: 'name', icon: User, isTop: true },
                   { label: 'Phone', field: 'phone', icon: Phone, isTop: true },
@@ -147,7 +147,7 @@ export default function Profile() {
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <MapPin size={12} /> Saved Address
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="profile-grid" style={{ gap: 12 }}>
                   {[
                     { label: 'Address Line 1', key: 'line1' },
                     { label: 'City', key: 'city' },

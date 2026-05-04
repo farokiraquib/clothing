@@ -1,16 +1,13 @@
 /* ===== PRODUCT CARD ===== */
 .product-card {
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: all var(--transition-base);
+  background: transparent;
+  overflow: visible;
   cursor: pointer;
   position: relative;
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  /* removed translate and shadow to match clean aesthetic */
 }
 
 .product-card-image {

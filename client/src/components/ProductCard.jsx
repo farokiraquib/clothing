@@ -6,7 +6,8 @@ import { API_ROOT } from '../api';
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
+  const inCart = cart.some(item => item.id === product.id);
   const { isInWishlist, toggleWishlist } = useWishlist();
   const inWishlist = isInWishlist(product.id);
 
@@ -17,7 +18,11 @@ export default function ProductCard({ product }) {
 
   const handleQuickAdd = (e) => {
     e.stopPropagation();
-    addToCart(product, product.sizes[0], product.colors[0]?.name);
+    if (inCart) {
+      navigate('/cart');
+    } else {
+      addToCart(product, product.sizes[0], product.colors[0]?.name);
+    }
   };
 
   const handleWishlist = (e) => {
@@ -35,10 +40,13 @@ export default function ProductCard({ product }) {
             {product.brand.toUpperCase()}
           </div>
         )}
-        <div className="product-card-badges">
-          {product.stock === 0 && <span className="product-card-badge product-card-badge-sale" style={{background: 'rgba(0,0,0,0.8)', color: '#fff'}}>Sold Out</span>}
-          {product.stock > 0 && product.newArrival && <span className="product-card-badge product-card-badge-new">New</span>}
-          {product.stock > 0 && discount > 0 && <span className="product-card-badge product-card-badge-sale">{discount}% OFF</span>}
+        <div style={{ position: 'absolute', top: 12, left: 12, fontSize: '10px', fontWeight: 800, letterSpacing: '0.05em', color: '#111', zIndex: 2 }}>
+          | EXCLUSIVE FIT
+        </div>
+        <div className="product-card-badges" style={{ position: 'absolute', bottom: 12, left: 12, top: 'auto', display: 'flex', flexDirection: 'column', gap: 4, zIndex: 2 }}>
+          {product.stock === 0 && <span className="product-card-badge product-card-badge-sale" style={{background: 'rgba(0,0,0,0.8)', color: '#fff', padding: '4px 8px'}}>Sold Out</span>}
+          {product.stock > 0 && product.newArrival && <span className="product-card-badge product-card-badge-new" style={{background: '#1A1A1A', color: '#fff', padding: '4px 8px', textTransform: 'uppercase', fontSize: '9px'}}>Premium Heavy<br/>Gauge Fabric</span>}
+          {product.stock > 0 && discount > 0 && <span className="product-card-badge product-card-badge-sale" style={{padding: '4px 8px'}}>{discount}% OFF</span>}
         </div>
         <button className={`product-card-wishlist ${inWishlist ? 'active' : ''}`} onClick={handleWishlist}>
           <Heart size={18} fill={inWishlist ? 'currentColor' : 'none'} />
@@ -47,13 +55,13 @@ export default function ProductCard({ product }) {
           {product.stock === 0 ? (
             <button disabled style={{cursor: 'not-allowed', background: '#ccc', color: '#666'}}>Sold Out</button>
           ) : (
-            <button onClick={handleQuickAdd}>Quick Add</button>
+            <button onClick={handleQuickAdd}>{inCart ? 'Go to Cart' : 'Quick Add'}</button>
           )}
         </div>
       </div>
-      <div className="product-card-info">
-        <div className="product-card-brand">{product.brand}</div>
-        <div className="product-card-name">{product.name}</div>
+      <div className="product-card-info" style={{ padding: '12px 0 0 0', textAlign: 'left' }}>
+        <div className="product-card-name" style={{ fontSize: '14px', fontWeight: 700, color: '#333', marginBottom: '2px' }}>{product.name}</div>
+        <div className="product-card-brand" style={{ fontSize: '13px', fontWeight: 400, color: '#777', textTransform: 'capitalize', marginBottom: '6px' }}>{product.category || product.brand}</div>
         <div className="product-card-price">
           <span className="product-card-price-current">{formatPrice(product.price)}</span>
           {product.comparePrice && <span className="product-card-price-compare">{formatPrice(product.comparePrice)}</span>}

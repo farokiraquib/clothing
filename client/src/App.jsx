@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
@@ -31,6 +32,14 @@ import './styles/shop.css';
 import './styles/cart.css';
 import './styles/admin.css';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -38,6 +47,7 @@ function App() {
         <CartProvider>
           <WishlistProvider>
           <Router>
+            <ScrollToTop />
             <Routes>
               {/* Admin routes (no navbar/footer) */}
               <Route path="/admin" element={<AdminLogin />} />
