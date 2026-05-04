@@ -1,24 +1,167 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Truck, Shield, RotateCcw, Star, ChevronLeft, ChevronRight, Zap, Clock, Sparkles, TrendingUp, Heart } from 'lucide-react';
+import { ArrowRight, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, Zap, Clock, Sparkles } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { getFeaturedProducts, getNewArrivals, getCategories, getSettings, API_ROOT } from '../api';
+import { getFeaturedProducts, getNewArrivals, getCategories, getBanners, API_ROOT } from '../api';
+import slide1 from '../assets/hero_slide_1.png';
+import slide2 from '../assets/hero_slide_2.png';
+import slide3 from '../assets/hero_slide_3.png';
 
 const BRANDS_DISPLAY = ['Nike', 'Adidas', 'Puma', 'Zara', 'H&M', "Levi's", 'Calvin Klein', 'Tommy Hilfiger', 'Under Armour', 'The North Face'];
 
 const PROMO_BANNERS = [
-  { text: '🔥 Summer Sale — Up to 50% Off Select Styles', link: '/shop', accent: true },
-  { text: '🚚 Free Shipping on Orders Above ₹1,999', link: '/shop', accent: false },
-  { text: '✨ New Arrivals Just Dropped — Shop Now', link: '/shop?newArrival=true', accent: true },
+  { text: '🔥 Summer Sale — Up to 50% Off Select Styles', link: '/shop' },
+  { text: '🚚 Free Shipping on Orders Above ₹1,999', link: '/shop' },
+  { text: '✨ New Arrivals Just Dropped — Shop Now', link: '/shop?newArrival=true' },
 ];
 
+/* Static fallback slides (used when no DB banners exist) */
+const STATIC_SLIDES = [
+  {
+    image: slide1,
+    tag: 'New Season 2026',
+    headline: ['Elevate Your', 'Everyday Style'],
+    sub: "Curated menswear from the world's most iconic brands.",
+    cta: 'Shop Men',
+    link: '/shop?category=men',
+    align: 'left',
+    dark: false,
+  },
+  {
+    image: slide2,
+    tag: "Women's Collection",
+    headline: ['Timeless', 'Elegance'],
+    sub: 'Discover flowing silhouettes and refined femininity.',
+    cta: 'Shop Women',
+    link: '/shop?category=women',
+    align: 'right',
+    dark: false,
+  },
+  {
+    image: slide3,
+    tag: 'Streetwear Drop',
+    headline: ['Fresh Kicks', 'Fresh Fits'],
+    sub: 'The latest sneakers and streetwear — just landed.',
+    cta: 'Shop Now',
+    link: '/shop',
+    align: 'left',
+    dark: true,
+  },
+];
+
+/* Convert a DB banner doc into the slide shape */
+function normalizeBanner(b) {
+  return {
+    image: b.url.startsWith('http') ? b.url : `${API_ROOT}${b.url}`,
+    tag: b.tag || '',
+    headline: b.headline ? b.headline.split('\n') : [''],
+    sub: b.sub || '',
+    cta: b.cta || '',
+    link: b.link || '/shop',
+    align: b.align || 'left',
+    dark: !!b.dark,
+  };
+}
+
+/* ── Hero Slideshow Component ── */
+function HeroSlideshow({ slides }) {
+  const [current, setCurrent] = useState(0);
+  const [prev, setPrev] = useState(null);
+  const timerRef = useRef(null);
+  const count = slides.length;
+
+  if (count === 0) return null;
+
+  const goTo = (idx) => {
+    if (idx === current) return;
+    setPrev(current);
+    setCurrent(idx);
+    setTimeout(() => setPrev(null), 700);
+  };
+
+  const goNext = () => goTo((current + 1) % count);
+  const goPrev = () => goTo((current - 1 + count) % count);
+
+  // Auto-advance
+  useEffect(() => {
+    timerRef.current = setInterval(goNext, 5000);
+    return () => clearInterval(timerRef.current);
+  }, [current, count]);
+
+  const slide = slides[current];
+
+  return (
+    <div className="hero-slider">
+      {/* Slide layers */}
+      {slides.map((s, i) => (
+        <Link
+          to={s.link || '/shop'}
+          key={i}
+          className={`hero-slide${i === current ? ' hero-slide--active' : i === prev ? ' hero-slide--exit' : ''}`}
+          style={{ display: 'block' }}
+        >
+          <img src={s.image} alt="" className="hero-slide-img" draggable={false} />
+          {/* Only show dark gradient overlay if there is text that needs to be readable */}
+          {(s.tag || (s.headline && s.headline.length > 0 && s.headline[0].trim() !== '') || s.sub) && (
+            <div className={`hero-slide-overlay${s.dark ? ' hero-slide-overlay--dark' : ''}`} />
+          )}
+        </Link>
+      ))}
+
+      {/* Text overlay (pointerEvents none so clicks pass through to the image link) */}
+      <div
+        className={`hero-slide-content hero-slide-content--${slide.align}${slide.dark ? ' hero-slide-content--light' : ''}`}
+        key={current}
+        style={{ pointerEvents: 'none' }}
+      >
+        {slide.tag && <span className="hero-slide-tag">{slide.tag}</span>}
+        
+        {slide.headline && slide.headline.length > 0 && slide.headline[0].trim() !== '' && (
+          <h1 className="hero-slide-headline">
+            {slide.headline.map((line, idx) => (
+              <span key={idx}>{line}{idx < slide.headline.length - 1 && <br />}</span>
+            ))}
+          </h1>
+        )}
+        
+        {slide.sub && <p className="hero-slide-sub">{slide.sub}</p>}
+      </div>
+
+      {/* Arrows */}
+      <button className="hero-arrow hero-arrow--left" onClick={goPrev} aria-label="Previous slide">
+        <ChevronLeft size={28} />
+      </button>
+      <button className="hero-arrow hero-arrow--right" onClick={goNext} aria-label="Next slide">
+        <ChevronRight size={28} />
+      </button>
+
+      {/* Dots */}
+      <div className="hero-dots">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            className={`hero-dot${i === current ? ' hero-dot--active' : ''}`}
+            onClick={() => goTo(i)}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Progress bar */}
+      <div className="hero-progress">
+        <div key={current} className="hero-progress-bar" />
+      </div>
+    </div>
+  );
+}
+
+/* ── Main Home Page ── */
 export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [settings, setSettings] = useState(null);
+  const [slides, setSlides] = useState(STATIC_SLIDES);
   const [currentPromo, setCurrentPromo] = useState(0);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
@@ -26,137 +169,56 @@ export default function Home() {
     getFeaturedProducts().then(setFeatured).catch(() => {});
     getNewArrivals().then(setNewArrivals).catch(() => {});
     getCategories().then(setCategories).catch(() => {});
-    getSettings().then(setSettings).catch(() => {});
+    // Load banners from DB; fall back to static if none uploaded yet
+    getBanners()
+      .then(res => { if (res && res.length > 0) setSlides(res.map(normalizeBanner)); })
+      .catch(() => {});
   }, []);
 
-  // Auto-rotate promo banners
   useEffect(() => {
     const t = setInterval(() => setCurrentPromo(p => (p + 1) % PROMO_BANNERS.length), 4000);
     return () => clearInterval(t);
   }, []);
 
-  const scrollProducts = (direction) => {
+  const scrollProducts = (dir) => {
     if (!scrollRef.current) return;
-    const amount = 300;
-    scrollRef.current.scrollBy({ left: direction * amount, behavior: 'smooth' });
+    scrollRef.current.scrollBy({ left: dir * 300, behavior: 'smooth' });
   };
 
   return (
     <div className="page-enter">
-      {/* Promo Banner Strip */}
+
+      {/* Promo Strip */}
       <div className="promo-strip">
         <div className="promo-strip-inner">
           {PROMO_BANNERS.map((p, i) => (
-            <Link
-              key={i}
-              to={p.link}
-              className={`promo-strip-item ${i === currentPromo ? 'active' : ''}`}
-            >
+            <Link key={i} to={p.link} className={`promo-strip-item${i === currentPromo ? ' active' : ''}`}>
               {p.text}
             </Link>
           ))}
         </div>
       </div>
 
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero-bg-pattern" />
-        <div className="hero-content">
-          <div className="hero-badge-pill">
-            <Sparkles size={14} />
-            <span>New Season 2026</span>
-          </div>
-          <h1>Elevate Your <br /><span className="hero-accent-text">Everyday Style</span></h1>
-          <p>Discover curated collections from the world's most iconic brands. Fashion that moves with you.</p>
-          <div className="hero-actions">
-            <Link to="/shop" className="btn btn-primary btn-lg hero-cta-main">
-              Shop Now <ArrowRight size={18} />
-            </Link>
-            <Link to="/shop?newArrival=true" className="btn btn-outline btn-lg">New Arrivals</Link>
-          </div>
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <h4>200+</h4>
-              <p>Products</p>
-            </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
-              <h4>10+</h4>
-              <p>Brands</p>
-            </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
-              <h4>50K+</h4>
-              <p>Happy Customers</p>
-            </div>
-          </div>
-        </div>
-        <div className="hero-image">
-          <div className="hero-image-card hero-image-card-1">
-            {settings?.heroImage1 ? (
-              <img src={settings.heroImage1.startsWith('http') ? settings.heroImage1 : `${API_ROOT}${settings.heroImage1}`} alt="Trending" style={{width:'100%', height:'100%', objectFit:'cover'}} />
-            ) : (
-              <div className="hero-card-shimmer" />
-            )}
-          </div>
-          <div className="hero-image-card hero-image-card-2">
-            {settings?.heroImage2 ? (
-              <img src={settings.heroImage2.startsWith('http') ? settings.heroImage2 : `${API_ROOT}${settings.heroImage2}`} alt="Best Seller" style={{width:'100%', height:'100%', objectFit:'cover'}} />
-            ) : (
-              <div className="hero-card-shimmer" />
-            )}
-          </div>
-          <div className="hero-floating-badge hero-floating-badge-1">
-            <TrendingUp size={16} />
-            <span>Trending</span>
-          </div>
-          <div className="hero-floating-badge hero-floating-badge-2">
-            <Heart size={16} />
-            <span>Best Seller</span>
-          </div>
-        </div>
-      </section>
+      {/* ★ Hero Slideshow — powered by DB banners */}
+      <div className="container" style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+        <HeroSlideshow slides={slides} />
+      </div>
 
-      {/* Trust Badges */}
-      <section className="trust-strip">
+      {/* Trust Strip — hidden on mobile to save space */}
+      <section className="trust-strip trust-strip--desktop-only">
         <div className="container">
           <div className="trust-strip-grid">
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <Truck size={22} />
+            {[
+              { icon: <Truck size={22} />,     title: 'Free Shipping',  sub: 'On orders above ₹1,999' },
+              { icon: <RotateCcw size={22} />, title: 'Easy Returns',   sub: '30-day hassle-free' },
+              { icon: <Shield size={22} />,    title: '100% Authentic', sub: 'Genuine products' },
+              { icon: <Zap size={22} />,       title: 'Fast Delivery',  sub: '2-5 business days' },
+            ].map((item, i) => (
+              <div key={i} className="trust-item">
+                <div className="trust-item-icon">{item.icon}</div>
+                <div><h4>{item.title}</h4><p>{item.sub}</p></div>
               </div>
-              <div>
-                <h4>Free Shipping</h4>
-                <p>On orders above ₹1,999</p>
-              </div>
-            </div>
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <RotateCcw size={22} />
-              </div>
-              <div>
-                <h4>Easy Returns</h4>
-                <p>30-day hassle-free</p>
-              </div>
-            </div>
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <Shield size={22} />
-              </div>
-              <div>
-                <h4>100% Authentic</h4>
-                <p>Genuine products</p>
-              </div>
-            </div>
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <Zap size={22} />
-              </div>
-              <div>
-                <h4>Fast Delivery</h4>
-                <p>2-5 business days</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -168,7 +230,8 @@ export default function Home() {
           <div className="brands-marquee">
             <div className="brands-marquee-track">
               {[...BRANDS_DISPLAY, ...BRANDS_DISPLAY].map((b, i) => (
-                <div key={i} className="brand-item" onClick={() => navigate(`/shop?brand=${b.toLowerCase().replace(/['\s]/g, '-')}`)}>
+                <div key={i} className="brand-item"
+                  onClick={() => navigate(`/shop?brand=${b.toLowerCase().replace(/['\s]/g, '-')}`)}>
                   <span>{b}</span>
                 </div>
               ))}
@@ -183,7 +246,7 @@ export default function Home() {
           <div className="section-header">
             <div>
               <h2 className="section-title">Shop by Category</h2>
-              <p className="section-subtitle" style={{marginBottom: 0}}>Find your perfect look</p>
+              <p className="section-subtitle" style={{ marginBottom: 0 }}>Find your perfect look</p>
             </div>
             <Link to="/shop" className="btn btn-outline">View All <ArrowRight size={16} /></Link>
           </div>
@@ -191,16 +254,16 @@ export default function Home() {
             {categories.map((cat, idx) => {
               const fallbacks = [
                 { sub: 'Discover the latest trends', gradient: 'linear-gradient(135deg,#2C3E50 0%,#4A6741 100%)' },
-                { sub: 'Elevate your wardrobe', gradient: 'linear-gradient(135deg,#8E6B5E 0%,#C9A96E 100%)' },
-                { sub: 'Fresh drops this week', gradient: 'linear-gradient(135deg,#4A90D9 0%,#67B8DE 100%)' }
+                { sub: 'Elevate your wardrobe',      gradient: 'linear-gradient(135deg,#8E6B5E 0%,#C9A96E 100%)' },
+                { sub: 'Fresh drops this week',      gradient: 'linear-gradient(135deg,#4A90D9 0%,#67B8DE 100%)' },
               ];
               const fb = fallbacks[idx % fallbacks.length];
               return (
                 <Link to={`/shop?category=${cat.id}`} key={cat.id} className="category-card">
-                  {(cat.image && cat.image.startsWith('/uploads')) || (cat.image && cat.image.startsWith('http')) ? (
+                  {cat.image && (cat.image.startsWith('/uploads') || cat.image.startsWith('http')) ? (
                     <img src={cat.image.startsWith('http') ? cat.image : `${API_ROOT}${cat.image}`} alt={cat.name} className="category-card-img" />
                   ) : (
-                    <div className="category-card-bg" style={{background: fb.gradient}} />
+                    <div className="category-card-bg" style={{ background: fb.gradient }} />
                   )}
                   <div className="category-card-overlay" />
                   <div className="category-card-content">
@@ -216,7 +279,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured */}
+      {/* Featured Products */}
       {featured.length > 0 && (
         <section className="section section-alt">
           <div className="container">
@@ -234,7 +297,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* New Arrivals Scroll */}
+      {/* New Arrivals */}
       {newArrivals.length > 0 && (
         <section className="section">
           <div className="container">
@@ -246,7 +309,9 @@ export default function Home() {
               <div className="scroll-controls">
                 <button className="scroll-btn" onClick={() => scrollProducts(-1)}><ChevronLeft size={20} /></button>
                 <button className="scroll-btn" onClick={() => scrollProducts(1)}><ChevronRight size={20} /></button>
-                <Link to="/shop?newArrival=true" className="btn btn-outline" style={{marginLeft: 8}}>See All <ArrowRight size={16} /></Link>
+                <Link to="/shop?newArrival=true" className="btn btn-outline" style={{ marginLeft: 8 }}>
+                  See All <ArrowRight size={16} />
+                </Link>
               </div>
             </div>
             <div className="product-scroll" ref={scrollRef}>
@@ -259,7 +324,7 @@ export default function Home() {
       {/* CTA Banner */}
       <section className="cta-banner">
         <div className="cta-banner-bg" />
-        <div className="container" style={{position: 'relative', zIndex: 2}}>
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <div className="cta-banner-content">
             <div className="cta-banner-badge">Limited Time Offer</div>
             <h2>Summer Collection 2026</h2>
@@ -284,6 +349,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

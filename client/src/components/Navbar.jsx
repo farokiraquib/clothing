@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, Heart, Menu, X, User, LogOut, Package, Settings } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, X, User, LogOut, Package, Settings, Mic } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useUser } from '../context/UserContext';
@@ -15,6 +15,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSearch, setShowSearch]   = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const searchRef  = useRef(null);
   const profileRef = useRef(null);
@@ -30,10 +31,13 @@ export default function Navbar() {
     return location.pathname === '/shop' && !location.search;
   };
 
-  // Close search on outside click
+  // Close search/profile on outside click
   useEffect(() => {
     const handler = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target)) setShowSearch(false);
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSearch(false);
+        setSearchFocused(false);
+      }
       if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
     };
     document.addEventListener('mousedown', handler);
@@ -70,58 +74,74 @@ export default function Navbar() {
     <>
       <nav className="navbar">
         <div className="navbar-inner">
-          {/* Logo */}
-          <Link to="/" className="navbar-logo">Mac<span>Miller</span></Link>
 
-          {/* Desktop Nav — only key shopping links */}
+          {/* LEFT — Category Navigation */}
           <div className="navbar-nav">
-            <NavLink to="/" end>Home</NavLink>
+            <NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink>
             <Link to="/shop" className={isShopActive() ? 'active' : ''}>Shop</Link>
-            <Link to="/shop?category=men"    className={isShopActive('men')    ? 'active' : ''}>Men</Link>
-            <Link to="/shop?category=women"  className={isShopActive('women')  ? 'active' : ''}>Women</Link>
-            <Link to="/shop?category=kids"   className={isShopActive('kids')   ? 'active' : ''}>Kids</Link>
+            <Link to="/shop?category=men"   className={isShopActive('men')   ? 'active' : ''}>Men</Link>
+            <Link to="/shop?category=women" className={isShopActive('women') ? 'active' : ''}>Women</Link>
+            <Link to="/shop?category=kids"  className={isShopActive('kids')  ? 'active' : ''}>Kids</Link>
           </div>
 
-          {/* Search */}
-          <div className="navbar-search" ref={searchRef}>
-            <Search size={16} className="navbar-search-icon" />
-            <input
-              type="text" placeholder="Search products..."
-              value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {showSearch && searchResults.length > 0 && (
-              <div className="search-results">
-                {searchResults.map(p => (
-                  <div key={p.id} className="search-result-item" onClick={() => handleResultClick(p.id)}>
-                    <div className="search-result-img" style={{background: 'var(--bg-secondary)'}} />
-                    <div className="search-result-info">
-                      <h4>{p.name}</h4>
-                      <p>{p.brand.toUpperCase()} · {formatPrice(p.price)}</p>
+          {/* CENTER — Logo */}
+          <Link to="/" className="navbar-logo">
+            Mac<span>Miller</span>
+          </Link>
+
+          {/* RIGHT — Search + Icons */}
+          <div className="navbar-right">
+
+            {/* Search */}
+            <div className={`navbar-search ${searchFocused ? 'focused' : ''}`} ref={searchRef}>
+              <Search size={15} className="navbar-search-icon" />
+              <input
+                type="text"
+                placeholder="What are you looking for?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+              />
+              <button className="navbar-search-mic" title="Voice search" tabIndex={-1}>
+                <Mic size={14} />
+              </button>
+              {showSearch && searchResults.length > 0 && (
+                <div className="search-results">
+                  {searchResults.map(p => (
+                    <div key={p.id} className="search-result-item" onClick={() => handleResultClick(p.id)}>
+                      <div className="search-result-img" style={{ background: 'var(--bg-secondary)' }} />
+                      <div className="search-result-info">
+                        <h4>{p.name}</h4>
+                        <p>{p.brand.toUpperCase()} · {formatPrice(p.price)}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          {/* Actions */}
-          <div className="navbar-actions">
+            {/* Wishlist */}
             <Link to="/wishlist" className="navbar-action-btn" title="Wishlist">
               <Heart size={20} />
-              {wishlistCount > 0 && <span key={`w-${wishlistCount}`} className="navbar-badge animate-pop">{wishlistCount}</span>}
+              {wishlistCount > 0 && (
+                <span key={`w-${wishlistCount}`} className="navbar-badge animate-pop">{wishlistCount}</span>
+              )}
             </Link>
+
+            {/* Cart */}
             <Link to="/cart" className="navbar-action-btn" title="Cart">
               <ShoppingBag size={20} />
-              {cartCount > 0 && <span key={`c-${cartCount}`} className="navbar-badge animate-pop">{cartCount}</span>}
+              {cartCount > 0 && (
+                <span key={`c-${cartCount}`} className="navbar-badge animate-pop">{cartCount}</span>
+              )}
             </Link>
 
             {/* Profile */}
             <div ref={profileRef} style={{ position: 'relative' }}>
               <button
-                className="navbar-action-btn"
+                className={`navbar-action-btn ${user ? 'navbar-action-btn--avatar' : ''}`}
                 onClick={() => setProfileOpen(p => !p)}
                 title="Account"
-                style={user ? { background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 13, borderRadius: '50%' } : {}}
               >
                 {user ? initials : <User size={20} />}
               </button>
@@ -152,7 +172,7 @@ export default function Navbar() {
                   ) : (
                     <>
                       <div style={{ padding: '16px 16px 12px', fontSize: 14, color: 'var(--text-secondary)' }}>
-                        Sign in for faster checkout & order tracking
+                        Sign in for faster checkout &amp; order tracking
                       </div>
                       <div className="profile-dropdown-divider" />
                       <button className="profile-dropdown-item" onClick={openLogin}>
@@ -172,8 +192,8 @@ export default function Navbar() {
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
-        </div>
 
+        </div>
       </nav>
 
       {/* Mobile Menu */}
@@ -185,10 +205,10 @@ export default function Navbar() {
               value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
             />
             {showSearch && searchResults.length > 0 && (
-              <div className="search-results" style={{position: 'static', marginTop: 8}}>
+              <div className="search-results" style={{ position: 'static', marginTop: 8 }}>
                 {searchResults.map(p => (
                   <div key={p.id} className="search-result-item" onClick={() => { handleResultClick(p.id); setMobileOpen(false); }}>
-                    <div className="search-result-img" style={{background: 'var(--bg-secondary)'}} />
+                    <div className="search-result-img" style={{ background: 'var(--bg-secondary)' }} />
                     <div className="search-result-info">
                       <h4>{p.name}</h4><p>{formatPrice(p.price)}</p>
                     </div>
@@ -197,13 +217,13 @@ export default function Navbar() {
               </div>
             )}
           </div>
-          <NavLink to="/"                                     onClick={() => setMobileOpen(false)}>Home</NavLink>
+          <NavLink to="/"                                        onClick={() => setMobileOpen(false)}>Home</NavLink>
           <Link to="/shop"             className={isShopActive()       ? 'active' : ''} onClick={() => setMobileOpen(false)}>Shop All</Link>
-          <Link to="/shop?category=men"    className={isShopActive('men')    ? 'active' : ''} onClick={() => setMobileOpen(false)}>Men</Link>
-          <Link to="/shop?category=women"  className={isShopActive('women')  ? 'active' : ''} onClick={() => setMobileOpen(false)}>Women</Link>
-          <Link to="/shop?category=kids"   className={isShopActive('kids')   ? 'active' : ''} onClick={() => setMobileOpen(false)}>Kids</Link>
-          <NavLink to="/about"   onClick={() => setMobileOpen(false)}>About</NavLink>
-          <NavLink to="/contact" onClick={() => setMobileOpen(false)}>Contact</NavLink>
+          <Link to="/shop?category=men"   className={isShopActive('men')   ? 'active' : ''} onClick={() => setMobileOpen(false)}>Men</Link>
+          <Link to="/shop?category=women" className={isShopActive('women') ? 'active' : ''} onClick={() => setMobileOpen(false)}>Women</Link>
+          <Link to="/shop?category=kids"  className={isShopActive('kids')  ? 'active' : ''} onClick={() => setMobileOpen(false)}>Kids</Link>
+          <NavLink to="/about"       onClick={() => setMobileOpen(false)}>About</NavLink>
+          <NavLink to="/contact"     onClick={() => setMobileOpen(false)}>Contact</NavLink>
           <NavLink to="/track-order" onClick={() => setMobileOpen(false)}>Track Order</NavLink>
           {user ? (
             <>

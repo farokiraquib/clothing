@@ -13,9 +13,9 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'macmiller',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-    transformation: [{ width: 800, height: 1000, crop: 'limit', quality: 'auto' }],
+    transformation: [{ quality: 'auto' }],
   },
 });
 
-export const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+export const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 export { cloudinary };

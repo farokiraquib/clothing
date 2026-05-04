@@ -94,6 +94,17 @@ export const getSettings = () => request('/admin/settings');
 export const updateSettings = (data) =>
   request('/admin/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
 
+// Banners
+export const getBanners = () => request('/admin/banners');
+export const addBanner = (data) =>
+  request('/admin/banners', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+export const updateBanner = (id, data) =>
+  request(`/admin/banners/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+export const deleteBanner = (id) =>
+  request(`/admin/banners/${id}`, { method: 'DELETE', headers: authHeaders() });
+export const reorderBanners = (order) =>
+  request('/admin/banners-reorder', { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ order }) });
+
 // Auth / User
 export const registerUser = (name, email, password) =>
   request('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password }) });

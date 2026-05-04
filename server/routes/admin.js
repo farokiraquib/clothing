@@ -17,59 +17,49 @@ router.post('/login', (req, res) => {
   }
 });
 
-// GET /api/admin/stats — Dashboard statistics
+// GET /api/admin/stats
 router.get('/stats', adminAuth, async (req, res) => {
   try {
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
     const lowStock = await Product.countDocuments({ stock: { $lt: 10 } });
     const processingOrders = await Order.countDocuments({ status: 'Processing' });
-    
-    // Calculate total revenue
     const revenueAggregation = await Order.aggregate([
       { $group: { _id: null, totalRevenue: { $sum: '$total' } } }
     ]);
     const totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].totalRevenue : 0;
-
-    res.json({
-      totalProducts,
-      totalOrders,
-      totalRevenue,
-      lowStock,
-      processingOrders
-    });
+    res.json({ totalProducts, totalOrders, totalRevenue, lowStock, processingOrders });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
 // POST /api/admin/upload — Upload image(s) via Cloudinary
-router.post('/upload', adminAuth, upload.array('images', 5), (req, res) => {
-  try {
-    // req.files containing path handles the Cloudinary URL return
+router.post('/upload', adminAuth, (req, res) => {
+  upload.array('images', 10)(req, res, (err) => {
+    if (err) {
+      console.error('Upload Error:', err);
+      return res.status(500).json({ error: err.message || 'Upload failed' });
+    }
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files provided' });
+    }
     const urls = req.files.map(f => f.path);
     res.json({ urls });
-  } catch (err) {
-    res.status(500).json({ error: 'Upload failed' });
-  }
+  });
 });
 
-// GET /api/admin/customers/export — Export unique customer emails to CSV
+// GET /api/admin/customers/export
 router.get('/customers/export', adminAuth, async (req, res) => {
   try {
     const orders = await Order.find({}, 'customer');
-    
-    // Extract unique customers
     const customersMap = new Map();
     orders.forEach(o => {
       if (o.customer && o.customer.email) {
         customersMap.set(o.customer.email.toLowerCase(), o.customer);
       }
     });
-
     const uniqueCustomers = Array.from(customersMap.values());
-
-    // Generate CSV
     let csv = 'Name,Email,Phone,City,State\n';
     uniqueCustomers.forEach(c => {
       const name = (c.name || '').replace(/,/g, '');
@@ -78,7 +68,6 @@ router.get('/customers/export', adminAuth, async (req, res) => {
       const state = (c.state || '').replace(/,/g, '');
       csv += `${name},${c.email},${phone},${city},${state}\n`;
     });
-
     res.header('Content-Type', 'text/csv');
     res.attachment('customers.csv');
     res.send(csv);
@@ -87,33 +76,107 @@ router.get('/customers/export', adminAuth, async (req, res) => {
   }
 });
 
-// GET /api/admin/settings — Get global store settings
+// ── Settings ──────────────────────────────────────────────
+
+// GET /api/admin/settings
 router.get('/settings', async (req, res) => {
   try {
     let settings = await Settings.findOne({ id: 'global' });
-    if (!settings) {
-      settings = new Settings({ id: 'global' });
-      await settings.save();
-    }
+    if (!settings) { settings = new Settings({ id: 'global' }); await settings.save(); }
     res.json(settings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch settings' });
   }
 });
 
-// PUT /api/admin/settings — Update global store settings
+// PUT /api/admin/settings
 router.put('/settings', adminAuth, async (req, res) => {
   try {
     let settings = await Settings.findOne({ id: 'global' });
     if (!settings) settings = new Settings({ id: 'global' });
-
     if (req.body.heroImage1 !== undefined) settings.heroImage1 = req.body.heroImage1;
     if (req.body.heroImage2 !== undefined) settings.heroImage2 = req.body.heroImage2;
-
+    if (req.body.banners !== undefined) settings.banners = req.body.banners;
     const saved = await settings.save();
     res.json(saved);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update settings' });
+  }
+});
+
+// ── Banner CRUD ───────────────────────────────────────────
+
+// GET /api/admin/banners
+router.get('/banners', async (req, res) => {
+  try {
+    let settings = await Settings.findOne({ id: 'global' });
+    if (!settings) { settings = new Settings({ id: 'global' }); await settings.save(); }
+    const banners = (settings.banners || []).sort((a, b) => a.order - b.order);
+    res.json(banners);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch banners' });
+  }
+});
+
+// POST /api/admin/banners — Add a new banner
+router.post('/banners', adminAuth, async (req, res) => {
+  try {
+    let settings = await Settings.findOne({ id: 'global' });
+    if (!settings) settings = new Settings({ id: 'global' });
+    const maxOrder = settings.banners.length > 0
+      ? Math.max(...settings.banners.map(b => b.order))
+      : -1;
+    const newBanner = { ...req.body, order: maxOrder + 1 };
+    settings.banners.push(newBanner);
+    await settings.save();
+    res.json(settings.banners.sort((a, b) => a.order - b.order));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add banner' });
+  }
+});
+
+// PUT /api/admin/banners/:bannerId — Edit a banner
+router.put('/banners/:bannerId', adminAuth, async (req, res) => {
+  try {
+    let settings = await Settings.findOne({ id: 'global' });
+    if (!settings) return res.status(404).json({ error: 'Settings not found' });
+    const banner = settings.banners.id(req.params.bannerId);
+    if (!banner) return res.status(404).json({ error: 'Banner not found' });
+    Object.assign(banner, req.body);
+    await settings.save();
+    res.json(settings.banners.sort((a, b) => a.order - b.order));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update banner' });
+  }
+});
+
+// DELETE /api/admin/banners/:bannerId — Delete a banner
+router.delete('/banners/:bannerId', adminAuth, async (req, res) => {
+  try {
+    let settings = await Settings.findOne({ id: 'global' });
+    if (!settings) return res.status(404).json({ error: 'Settings not found' });
+    settings.banners = settings.banners.filter(b => b._id.toString() !== req.params.bannerId);
+    await settings.save();
+    res.json(settings.banners.sort((a, b) => a.order - b.order));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete banner' });
+  }
+});
+
+// PUT /api/admin/banners/reorder — Reorder banners
+router.put('/banners-reorder', adminAuth, async (req, res) => {
+  try {
+    // req.body.order = [{ id, order }, ...]
+    let settings = await Settings.findOne({ id: 'global' });
+    if (!settings) return res.status(404).json({ error: 'Settings not found' });
+    req.body.order.forEach(({ id, order }) => {
+      const banner = settings.banners.id(id);
+      if (banner) banner.order = order;
+    });
+    await settings.save();
+    res.json(settings.banners.sort((a, b) => a.order - b.order));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reorder banners' });
   }
 });
 
