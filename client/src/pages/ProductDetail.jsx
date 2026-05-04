@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Heart, Minus, Plus, Star, ShoppingBag, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -18,21 +18,7 @@ export default function ProductDetail() {
   const { cart, addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const navigate = useNavigate();
-
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
-  const onTouchEndHandler = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > 50) nextImage();
-    if (distance < -50) prevImage();
-  };
+  const galleryRef = useRef(null);
 
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
@@ -84,14 +70,21 @@ export default function ProductDetail() {
     setTimeout(() => setCartAdded(false), 1800);
   };
 
+  const scrollToImage = (idx) => {
+    if (galleryRef.current) {
+      galleryRef.current.scrollTo({ left: idx * galleryRef.current.clientWidth, behavior: 'smooth' });
+    }
+    setMainImageIndex(idx);
+  };
+
   const nextImage = () => {
     if (!product?.images) return;
-    setMainImageIndex((prev) => (prev + 1) % product.images.length);
+    scrollToImage((mainImageIndex + 1) % product.images.length);
   };
 
   const prevImage = () => {
     if (!product?.images) return;
-    setMainImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+    scrollToImage((mainImageIndex - 1 + product.images.length) % product.images.length);
   };
 
   return (
@@ -102,14 +95,33 @@ export default function ProductDetail() {
         </Link>
         <div className="product-detail-grid">
           <div className="product-gallery">
-            <div className="product-gallery-main" style={{position:'relative'}} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEndHandler}>
-              {product.images?.[mainImageIndex]?.startsWith('/uploads') || product.images?.[mainImageIndex]?.startsWith('http') ? (
-                <img src={product.images[mainImageIndex].startsWith('http') ? product.images[mainImageIndex] : `${API_ROOT}${product.images[mainImageIndex]}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
-              ) : (
-                <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#999',fontWeight:600}}>
-                  {product.brand.toUpperCase()}
-                </div>
-              )}
+            <div className="product-gallery-main" style={{position:'relative', overflow:'hidden'}}>
+              <div 
+                ref={galleryRef}
+                onScroll={(e) => {
+                  const idx = Math.round(e.target.scrollLeft / e.target.clientWidth);
+                  if (idx !== mainImageIndex) setMainImageIndex(idx);
+                }}
+                style={{display:'flex', width:'100%', height:'100%', overflowX:'auto', scrollSnapType:'x mandatory', scrollBehavior:'smooth', scrollbarWidth:'none', msOverflowStyle:'none'}}
+              >
+                {product.images?.length > 0 ? product.images.map((img, i) => (
+                  <div key={i} style={{flex:'0 0 100%', width:'100%', height:'100%', scrollSnapAlign:'start'}}>
+                    {img.startsWith('/uploads') || img.startsWith('http') ? (
+                      <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                    ) : (
+                      <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#999',fontWeight:600}}>
+                        {product.brand.toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                )) : (
+                  <div style={{flex:'0 0 100%', width:'100%', height:'100%', scrollSnapAlign:'start'}}>
+                    <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#999',fontWeight:600}}>
+                      {product.brand.toUpperCase()}
+                    </div>
+                  </div>
+                )}
+              </div>
               {product.images?.length > 1 && (
                 <>
                   <button onClick={prevImage} style={{position:'absolute',top:'50%',left:16,transform:'translateY(-50%)',background:'rgba(255,255,255,0.8)',border:'none',borderRadius:'50%',width:40,height:40,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',boxShadow:'var(--shadow-sm)'}}>
@@ -124,7 +136,7 @@ export default function ProductDetail() {
             {product.images?.length > 1 && (
               <div style={{display:'flex',gap:12,marginTop:12,overflowX:'auto'}}>
                 {product.images.map((img, idx) => (
-                  <div key={idx} style={{width:80,height:80,flexShrink:0,cursor:'pointer',border:mainImageIndex === idx ? '2px solid var(--text-primary)' : '2px solid transparent',borderRadius:8,overflow:'hidden'}} onClick={() => setMainImageIndex(idx)}>
+                  <div key={idx} style={{width:80,height:80,flexShrink:0,cursor:'pointer',border:mainImageIndex === idx ? '2px solid var(--text-primary)' : '2px solid transparent',borderRadius:8,overflow:'hidden'}} onClick={() => scrollToImage(idx)}>
                     {img.startsWith('http') || img.startsWith('/uploads') ? (
                        <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={`${product.name} ${idx}`} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                     ) : (
