@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, Zap, Clock, Sparkles } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { getFeaturedProducts, getNewArrivals, getCategories, getBanners, API_ROOT } from '../api';
+import { getFeaturedProducts, getProducts, getNewArrivals, getCategories, getBanners, API_ROOT } from '../api';
 import slide1 from '../assets/hero_slide_1.png';
 import slide2 from '../assets/hero_slide_2.png';
 import slide3 from '../assets/hero_slide_3.png';
@@ -157,7 +157,10 @@ function HeroSlideshow({ slides }) {
 
 /* ── Main Home Page ── */
 export default function Home() {
-  const [featured, setFeatured] = useState([]);
+  const [homeProducts, setHomeProducts] = useState([]);
+  const [fetchState, setFetchState] = useState({ mode: 'featured', page: 1 });
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMoreProducts, setLoadingMoreProducts] = useState(false);
   const [newArrivals, setNewArrivals] = useState([]);
   const [categories, setCategories] = useState([]);
   const [slides, setSlides] = useState(STATIC_SLIDES);
@@ -165,8 +168,55 @@ export default function Home() {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
+  const observerRef = useRef();
+  const lastProductElementRef = useCallback(node => {
+    if (loadingMoreProducts || !hasMore) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setFetchState(prev => ({ ...prev, page: prev.page + 1 }));
+      }
+    });
+    
+    if (node) observerRef.current.observe(node);
+  }, [loadingMoreProducts, hasMore]);
+
   useEffect(() => {
-    getFeaturedProducts().then(setFeatured).catch(() => {});
+    if (!hasMore) return;
+    
+    setLoadingMoreProducts(true);
+    const isFeaturedMode = fetchState.mode === 'featured';
+    
+    getProducts({ 
+      featured: isFeaturedMode ? true : undefined, 
+      page: fetchState.page, 
+      limit: 30 
+    })
+      .then(data => {
+        setHomeProducts(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const newUnique = data.products.filter(p => !existingIds.has(p.id));
+          return [...prev, ...newUnique];
+        });
+
+        if (data.page >= data.totalPages) {
+          if (isFeaturedMode) {
+            setFetchState({ mode: 'normal', page: 1 });
+          } else {
+            setHasMore(false);
+            setLoadingMoreProducts(false);
+          }
+        } else {
+          setLoadingMoreProducts(false);
+        }
+      })
+      .catch(() => {
+        setLoadingMoreProducts(false);
+      });
+  }, [fetchState.mode, fetchState.page, hasMore]);
+
+  useEffect(() => {
     getNewArrivals().then(setNewArrivals).catch(() => {});
     getCategories().then(setCategories).catch(() => {});
     // Load banners from DB; fall back to static if none uploaded yet
@@ -313,7 +363,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      {featured.length > 0 && (
+      {homeProducts.length > 0 && (
         <section className="section section-alt">
           <div className="container">
             <div className="section-header">
@@ -321,45 +371,23 @@ export default function Home() {
                 <div className="section-eyebrow"><Sparkles size={14} /> Handpicked For You</div>
                 <h2 className="section-title">Featured Products</h2>
               </div>
-              <Link to="/shop?featured=true" className="btn btn-outline">View All <ArrowRight size={16} /></Link>
+              <Link to="/shop" className="btn btn-outline">View All <ArrowRight size={16} /></Link>
             </div>
             <div className="product-grid">
-              {featured.slice(0, 8).map(p => <ProductCard key={p.id} product={p} />)}
+              {homeProducts.map((p, i) => {
+                if (i === homeProducts.length - 1) {
+                  return <ProductCard ref={lastProductElementRef} key={p.id} product={p} />;
+                }
+                return <ProductCard key={p.id} product={p} />;
+              })}
             </div>
+            {loadingMoreProducts && (
+              <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-secondary)' }}>Loading more products...</div>
+            )}
           </div>
         </section>
       )}
 
-
-
-      {/* CTA Banner */}
-      <section className="cta-banner">
-        <div className="cta-banner-bg" />
-        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <div className="cta-banner-content">
-            <div className="cta-banner-badge">Limited Time Offer</div>
-            <h2>Summer Collection 2026</h2>
-            <p>Get up to 50% off on select styles. Don't miss out on the hottest trends of the season.</p>
-            <Link to="/shop" className="btn btn-accent btn-lg">Shop the Sale <ArrowRight size={18} /></Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="newsletter">
-        <div className="container">
-          <div className="newsletter-inner">
-            <div className="newsletter-text">
-              <h2>Stay in the Loop</h2>
-              <p>Subscribe for exclusive offers, new drops, and style inspiration delivered to your inbox.</p>
-            </div>
-            <div className="newsletter-form">
-              <input type="email" placeholder="Enter your email address" />
-              <button className="btn btn-accent">Subscribe</button>
-            </div>
-          </div>
-        </div>
-      </section>
 
     </div>
   );

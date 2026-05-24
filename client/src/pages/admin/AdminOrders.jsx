@@ -97,6 +97,8 @@ export default function AdminOrders() {
                 <p><strong>Email:</strong> {selectedOrder.customer?.email}</p>
                 <p><strong>Phone:</strong> {selectedOrder.customer?.phone}</p>
                 <p><strong>Address:</strong> {selectedOrder.customer?.address}, {selectedOrder.customer?.city}, {selectedOrder.customer?.state} - {selectedOrder.customer?.pincode}</p>
+                <p><strong>Payment Method:</strong> Razorpay</p>
+                <p><strong>Payment Status:</strong> <span className={`badge ${selectedOrder.paymentStatus === 'Paid' ? 'badge-success' : 'badge-warning'}`} style={{padding: '2px 6px', fontSize: '12px'}}>{selectedOrder.paymentStatus || 'Pending'}</span></p>
               </div>
               <h4 style={{marginBottom:8}}>Items</h4>
               {selectedOrder.items?.map((item, i) => (

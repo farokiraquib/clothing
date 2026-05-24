@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Smartphone, Building, Wallet, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useUser } from '../context/UserContext';
-import { createOrder } from '../api';
+import { createOrder, createRazorpayOrder, verifyRazorpayPayment } from '../api';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -37,6 +37,7 @@ export default function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // 1. Create order in our database
       const order = await createOrder({
         customer: form,
         items: cart.map(i => ({ productId: i.id, name: i.name, size: i.selectedSize, color: i.selectedColor, quantity: i.quantity, price: i.price })),
@@ -44,10 +45,64 @@ export default function Checkout() {
         shipping,
         total: cartTotal + shipping
       });
-      setOrderId(order.id);
-      setOrderPlaced(true);
-      clearCart();
-    } catch (err) { alert('Failed to place order'); }
+
+      // 2. Create Razorpay order
+      const rzpOrder = await createRazorpayOrder(cartTotal + shipping);
+
+      // 3. Open Razorpay checkout
+      const options = {
+        key: 'rzp_test_So7egikyu7MjeY',
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency,
+        name: 'Mac Miller Store',
+        description: `Order ${order.id}`,
+        order_id: rzpOrder.id,
+        notes: {
+          internal_order_id: order.id,
+          customer_email: form.email
+        },
+        handler: async function (response) {
+          try {
+            // 4. Verify payment on server
+            const verifyRes = await verifyRazorpayPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              internal_order_id: order.id
+            });
+            if (verifyRes.success) {
+              setOrderId(order.id);
+              setOrderPlaced(true);
+              window.scrollTo(0, 0);
+              clearCart();
+            } else {
+              alert('Payment verification failed. Please contact support.');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Error verifying payment.');
+          }
+        },
+        prefill: {
+          name: form.name,
+          email: form.email,
+          contact: form.phone
+        },
+        theme: {
+          color: '#111111'
+        }
+      };
+      
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        alert('Payment failed: ' + response.error.description);
+      });
+      rzp.open();
+
+    } catch (err) { 
+      console.error(err);
+      alert('Failed to place order'); 
+    }
   };
 
   if (cart.length === 0 && !orderPlaced) { navigate('/cart'); return null; }
@@ -91,10 +146,33 @@ export default function Checkout() {
                 </div>
               </div>
               <div className="checkout-section">
-                <h2>Payment</h2>
-                <div className="payment-placeholder">
-                  <CreditCard size={40} style={{color:'var(--text-tertiary)'}} />
-                  <p>Payment gateway integration coming soon.<br/>Your order will be placed as Cash on Delivery.</p>
+                <h2>Payment Method</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' }}>
+                    <ShieldCheck size={24} style={{color: 'var(--success)'}} />
+                    <div>
+                      <p style={{ fontWeight: '600', margin: 0 }}>Secure Checkout by Razorpay</p>
+                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0 }}>End-to-end encrypted and PCI DSS compliant.</p>
+                    </div>
+                  </div>
+                  <div className="payment-methods-grid">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <CreditCard size={20} style={{color:'var(--text-secondary)'}} />
+                      <span style={{ fontSize: '14px', fontWeight: '500' }}>Credit & Debit Cards</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <Smartphone size={20} style={{color:'var(--text-secondary)'}} />
+                      <span style={{ fontSize: '14px', fontWeight: '500' }}>UPI / QR Codes</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <Building size={20} style={{color:'var(--text-secondary)'}} />
+                      <span style={{ fontSize: '14px', fontWeight: '500' }}>Netbanking</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <Wallet size={20} style={{color:'var(--text-secondary)'}} />
+                      <span style={{ fontSize: '14px', fontWeight: '500' }}>Digital Wallets</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

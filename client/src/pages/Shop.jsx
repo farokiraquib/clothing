@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal, X, Check } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
@@ -14,18 +14,41 @@ const COLORS = [
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+
+  const searchString = searchParams.toString();
+  const [lastSearch, setLastSearch] = useState(searchString);
+
+  if (searchString !== lastSearch) {
+    setLastSearch(searchString);
+    setPage(1);
+  }
+
+  const observerRef = useRef();
+  const lastElementRef = useCallback(node => {
+    if (loading || loadingMore) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && page < totalPages) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    
+    if (node) observerRef.current.observe(node);
+  }, [loading, loadingMore, page, totalPages]);
 
   const filters = {
     category: searchParams.get('category') || '',
     brand: searchParams.get('brand') || '',
     sort: searchParams.get('sort') || 'newest',
-    page: Number(searchParams.get('page')) || 1,
     search: searchParams.get('search') || '',
     featured: searchParams.get('featured') || '',
     newArrival: searchParams.get('newArrival') || '',
@@ -38,31 +61,44 @@ export default function Shop() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    if (page === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
+
     const params = {};
     if (filters.category) params.category = filters.category;
     if (filters.brand) params.brand = filters.brand;
     if (filters.sort) params.sort = filters.sort;
-    if (filters.page) params.page = filters.page;
     if (filters.search) params.search = filters.search;
     if (filters.featured) params.featured = filters.featured;
     if (filters.newArrival) params.newArrival = filters.newArrival;
     if (filters.maxPrice) params.maxPrice = filters.maxPrice;
-    params.limit = 12;
+    params.page = page;
+    params.limit = 30; // Fetching 30 items for infinite scroll chunk
 
     getProducts(params).then(data => {
-      setProducts(data.products);
+      if (page === 1) {
+        setProducts(data.products);
+      } else {
+        setProducts(prev => [...prev, ...data.products]);
+      }
       setTotal(data.total);
       setTotalPages(data.totalPages);
       setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [searchParams]);
+      setLoadingMore(false);
+    }).catch(() => {
+      setLoading(false);
+      setLoadingMore(false);
+    });
+  }, [lastSearch, page]);
 
   const updateFilter = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
     if (value) newParams.set(key, value);
     else newParams.delete(key);
-    if (key !== 'page') newParams.delete('page');
+    newParams.delete('page'); // Clear page from URL if present
     setSearchParams(newParams);
   };
 
@@ -164,16 +200,17 @@ export default function Shop() {
                 <button className="btn btn-primary" onClick={clearFilters}>Clear Filters</button>
               </div>
             ) : (
-              <div className="product-grid">{products.map(p => <ProductCard key={p.id} product={p} />)}</div>
-            )}
-            {totalPages > 1 && (
-              <div className="pagination">
-                {[...Array(totalPages)].map((_, i) => (
-                  <button key={i} className={filters.page === i + 1 ? 'active' : ''} onClick={() => updateFilter('page', String(i + 1))}>
-                    {i + 1}
-                  </button>
-                ))}
+              <div className="product-grid">
+                {products.map((p, i) => {
+                  if (i === products.length - 1) {
+                    return <ProductCard ref={lastElementRef} key={p.id} product={p} />;
+                  }
+                  return <ProductCard key={p.id} product={p} />;
+                })}
               </div>
+            )}
+            {loadingMore && (
+              <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-secondary)' }}>Loading more products...</div>
             )}
           </div>
         </div>

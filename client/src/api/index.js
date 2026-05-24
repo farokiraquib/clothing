@@ -67,13 +67,20 @@ export const addBrand = (data) => request('/brands', { method: 'POST', headers: 
 export const createOrder = (orderData) =>
   request('/orders', { method: 'POST', body: JSON.stringify(orderData) });
 
+export const createRazorpayOrder = (amount) =>
+  request('/orders/razorpay/create', { method: 'POST', body: JSON.stringify({ amount }) });
+
+export const verifyRazorpayPayment = (data) =>
+  request('/orders/razorpay/verify', { method: 'POST', body: JSON.stringify(data) });
+
+
 export const getOrders = () =>
   request('/orders', { headers: authHeaders() });
 
 export const getOrder = (id) => request(`/orders/${id}`);
 
-export const trackOrder = (orderId, email) =>
-  request(`/orders/track?orderId=${encodeURIComponent(orderId)}&email=${encodeURIComponent(email)}`);
+export const trackOrder = (orderId) =>
+  request(`/orders/track?orderId=${encodeURIComponent(orderId)}`);
 
 export const updateOrderStatus = (id, data) =>
   request(`/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });

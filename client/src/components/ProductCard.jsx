@@ -1,10 +1,11 @@
+import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { API_ROOT } from '../api';
 
-export default function ProductCard({ product }) {
+const ProductCard = forwardRef(({ product }, ref) => {
   const navigate = useNavigate();
   const { cart, addToCart } = useCart();
   const inCart = cart.some(item => item.id === product.id);
@@ -31,7 +32,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className={`product-card ${product.stock === 0 ? 'out-of-stock' : ''}`} style={{ opacity: product.stock === 0 ? 0.6 : 1 }} onClick={() => navigate(`/product/${product.id}`)}>
+    <div ref={ref} className={`product-card ${product.stock === 0 ? 'out-of-stock' : ''}`} style={{ opacity: product.stock === 0 ? 0.6 : 1 }} onClick={() => navigate(`/product/${product.id}`)}>
       <div className="product-card-image">
         {(product.images?.[0]?.startsWith('/uploads') || product.images?.[0]?.startsWith('http')) ? (
           <img src={product.images[0].startsWith('http') ? product.images[0] : `${API_ROOT}${product.images[0]}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
@@ -77,4 +78,8 @@ export default function ProductCard({ product }) {
       </div>
     </div>
   );
-}
+});
+
+ProductCard.displayName = 'ProductCard';
+
+export default ProductCard;

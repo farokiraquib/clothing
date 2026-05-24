@@ -71,10 +71,21 @@
 .contact-form h2 { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-6); }
 .contact-form .input-group { margin-bottom: var(--space-4); }
 
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 @media (max-width: 768px) {
-  .cart-layout, .checkout-layout { grid-template-columns: 1fr; }
-  .checkout-form-grid { grid-template-columns: 1fr; }
+  .cart-layout, .checkout-layout { grid-template-columns: 1fr; gap: var(--space-4); }
+  .checkout-section { padding: var(--space-4); margin-bottom: var(--space-4); }
+  .checkout-page { padding: var(--space-4) 0 var(--space-10); }
+  .checkout-form-grid { grid-template-columns: 1fr; gap: var(--space-3); }
   .checkout-form-grid .full-width { grid-column: span 1; }
+  .payment-methods-grid { grid-template-columns: 1fr; gap: 8px; }
+  .cart-summary { padding: var(--space-4); }
   .about-values { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
 }

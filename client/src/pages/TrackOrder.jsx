@@ -16,7 +16,6 @@ const STATUS_META = {
 export default function TrackOrder() {
   const [searchParams] = useSearchParams();
   const [orderId, setOrderId]   = useState(searchParams.get('id') || '');
-  const [email, setEmail]       = useState('');
   const [order, setOrder]       = useState(null);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
@@ -29,10 +28,10 @@ export default function TrackOrder() {
     setLoading(true);
     setSearched(true);
     try {
-      const data = await trackOrder(orderId.trim(), email.trim());
+      const data = await trackOrder(orderId.trim());
       setOrder(data);
     } catch (err) {
-      setError(err.message || 'Order not found. Please check your Order ID and email.');
+      setError(err.message || 'Order not found. Please check your Order ID.');
     } finally {
       setLoading(false);
     }
@@ -54,12 +53,12 @@ export default function TrackOrder() {
             <Truck size={28} style={{ color: 'var(--accent)' }} />
           </div>
           <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8 }}>Track Your Order</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Enter your Order ID and email to get the latest status.</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Enter your Order ID to get the latest status.</p>
         </div>
 
         {/* Search Form */}
         <form onSubmit={handleTrack} style={{ background:'var(--surface-bg)', borderRadius:16, padding:32, marginBottom:32, border:'1px solid var(--border)' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:16, marginBottom:16 }}>
             <div>
               <label style={{ display:'block', fontSize:13, fontWeight:500, marginBottom:6, color:'var(--text-secondary)' }}>Order ID</label>
               <input
@@ -68,17 +67,6 @@ export default function TrackOrder() {
                 placeholder="e.g. ORD-ABC12345"
                 value={orderId}
                 onChange={e => setOrderId(e.target.value)}
-                style={{ width:'100%', padding:'12px 16px', borderRadius:10, border:'1px solid var(--border)', background:'var(--bg-primary)', color:'var(--text-primary)', fontSize:14, outline:'none' }}
-              />
-            </div>
-            <div>
-              <label style={{ display:'block', fontSize:13, fontWeight:500, marginBottom:6, color:'var(--text-secondary)' }}>Email Address</label>
-              <input
-                type="email"
-                required
-                placeholder="Email used at checkout"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
                 style={{ width:'100%', padding:'12px 16px', borderRadius:10, border:'1px solid var(--border)', background:'var(--bg-primary)', color:'var(--text-primary)', fontSize:14, outline:'none' }}
               />
             </div>
