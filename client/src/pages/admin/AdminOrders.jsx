@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Box, ClipboardList, Plus, LogOut, Package, Eye, Image as ImageIcon, Settings } from 'lucide-react';
+import { LayoutDashboard, Box, ClipboardList, Plus, LogOut, Package, Eye, Trash2, Image as ImageIcon, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { getOrders, updateOrderStatus } from '../../api';
+import { getOrders, updateOrderStatus, deleteOrder } from '../../api';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -26,6 +26,15 @@ export default function AdminOrders() {
       await updateOrderStatus(orderId, { status });
       loadOrders();
     } catch { alert('Failed to update status'); }
+  };
+
+  const handleDelete = async (orderId) => {
+    if (window.confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+      try {
+        await deleteOrder(orderId);
+        loadOrders();
+      } catch { alert('Failed to delete order'); }
+    }
   };
 
   const formatPrice = (p) => `₹${(p || 0).toLocaleString('en-IN')}`;
@@ -79,7 +88,8 @@ export default function AdminOrders() {
                           style={{padding:'4px 8px',fontSize:12,border:'1px solid var(--border)',borderRadius:4}}>
                           <option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
                         </select>
-                        <button onClick={() => setSelectedOrder(o)} style={{padding:4}}><Eye size={16} /></button>
+                        <button onClick={() => setSelectedOrder(o)} style={{padding:4}} title="View Order"><Eye size={16} /></button>
+                        <button onClick={() => handleDelete(o.id)} style={{padding:4, color: 'var(--error)'}} title="Delete Order"><Trash2 size={16} /></button>
                       </div>
                     </td>
                   </tr>

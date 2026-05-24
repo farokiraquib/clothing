@@ -85,6 +85,9 @@ export const trackOrder = (orderId) =>
 export const updateOrderStatus = (id, data) =>
   request(`/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
 
+export const deleteOrder = (id) =>
+  request(`/orders/${id}`, { method: 'DELETE', headers: authHeaders() });
+
 // Admin
 export const adminLogin = (password) =>
   request('/admin/login', { method: 'POST', body: JSON.stringify({ password }) });

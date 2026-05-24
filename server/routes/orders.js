@@ -119,6 +119,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+// DELETE /api/orders/:id — Admin: Delete order
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const order = await Order.findOneAndDelete({ id: req.params.id });
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    res.json({ success: true, message: 'Order deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete order' });
+  }
+});
+
 // PUT /api/orders/:id — Admin: Update order status
 router.put('/:id', adminAuth, async (req, res) => {
   try {
