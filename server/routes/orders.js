@@ -5,6 +5,7 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
+import { sendOrderNotification } from '../utils/pushNotifications.js';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'mock_key_id',
@@ -61,7 +62,11 @@ router.post('/razorpay/create', async (req, res) => {
     const order = await razorpay.orders.create(options);
     res.json(order);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create Razorpay order', details: err.message });
+    console.error('Razorpay Error:', err);
+    res.status(500).json({ 
+      error: 'Failed to create Razorpay order', 
+      details: err.message || err.error?.description || JSON.stringify(err) 
+    });
   }
 });
 
@@ -112,6 +117,9 @@ router.post('/', async (req, res) => {
         );
       }
     }
+
+    // Fire push notification (fire-and-forget)
+    sendOrderNotification(saved).catch(err => console.error('[push] Error:', err));
 
     res.status(201).json(saved);
   } catch (err) {
