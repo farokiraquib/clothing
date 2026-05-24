@@ -48,6 +48,6 @@ app.get('*', (req, res) => {
   res.sendFile(join(clientDist, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Mac Miller API running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Mac Miller API running on port ${PORT}`);
 });
