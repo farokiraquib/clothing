@@ -80,9 +80,20 @@ router.post('/razorpay/verify', async (req, res) => {
     const generated_signature = hmac.digest('hex');
 
     if (generated_signature === razorpay_signature) {
+      let updatedOrder = null;
       if (internal_order_id) {
-        await Order.findOneAndUpdate({ id: internal_order_id }, { paymentStatus: 'Paid' });
+        updatedOrder = await Order.findOneAndUpdate(
+          { id: internal_order_id }, 
+          { paymentStatus: 'Paid' },
+          { new: true }
+        );
       }
+
+      // Fire push notification only after successful payment
+      if (updatedOrder) {
+        sendOrderNotification(updatedOrder).catch(err => console.error('[push] Error:', err));
+      }
+
       res.json({ success: true, message: 'Payment verified successfully' });
     } else {
       res.status(400).json({ success: false, message: 'Payment verification failed' });
@@ -117,9 +128,6 @@ router.post('/', async (req, res) => {
         );
       }
     }
-
-    // Fire push notification (fire-and-forget)
-    sendOrderNotification(saved).catch(err => console.error('[push] Error:', err));
 
     res.status(201).json(saved);
   } catch (err) {
