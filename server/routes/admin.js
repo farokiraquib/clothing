@@ -4,6 +4,8 @@ import { upload } from '../middleware/upload.js';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import Settings from '../models/Settings.js';
+import { Expo } from 'expo-server-sdk';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -177,6 +179,71 @@ router.put('/banners-reorder', adminAuth, async (req, res) => {
     res.json(settings.banners.sort((a, b) => a.order - b.order));
   } catch (err) {
     res.status(500).json({ error: 'Failed to reorder banners' });
+  }
+});
+
+// ── Mobile App Routes (Bypass JWT for app testing) ──────────
+
+// POST /api/admin/mobile/push-token
+router.post('/mobile/push-token', async (req, res) => {
+  const { expoPushToken } = req.body;
+  if (!expoPushToken) return res.status(400).json({ success: false, message: 'expoPushToken required' });
+  if (!Expo.isExpoPushToken(expoPushToken)) return res.status(400).json({ success: false, message: 'Invalid token' });
+
+  try {
+    const adminsCollection = mongoose.connection.db.collection('admins');
+    await adminsCollection.findOneAndUpdate(
+      {},
+      {
+        $addToSet: { expoPushTokens: expoPushToken },
+        $setOnInsert: { name: 'Admin', email: 'admin@macmiller.com', createdAt: new Date() },
+        $set: { updatedAt: new Date() },
+      },
+      { upsert: true, returnDocument: 'after' }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE /api/admin/mobile/push-token
+router.delete('/mobile/push-token', async (req, res) => {
+  const { expoPushToken } = req.body;
+  if (!expoPushToken) return res.status(400).json({ success: false });
+  try {
+    const adminsCollection = mongoose.connection.db.collection('admins');
+    await adminsCollection.updateMany({}, { $pull: { expoPushTokens: expoPushToken } });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// GET /api/admin/mobile/orders
+router.get('/mobile/orders', async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 }).limit(50);
+    res.json({ success: true, orders });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// PUT /api/admin/mobile/orders/:id/status
+router.put('/mobile/orders/:id/status', async (req, res) => {
+  const { status } = req.body;
+  if (!status) return res.status(400).json({ success: false });
+  try {
+    const result = await Order.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      { $set: { status, updatedAt: new Date() } },
+      { new: true }
+    );
+    if (!result) return res.status(404).json({ success: false });
+    res.json({ success: true, order: result });
+  } catch (err) {
+    res.status(500).json({ success: false });
   }
 });
 
