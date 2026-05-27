@@ -61,13 +61,13 @@ router.post('/ask', async (req, res) => {
     if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
     if (!process.env.GEMINI_API_KEY) return res.status(500).json({ success: false, message: 'GEMINI_API_KEY is missing' });
 
-    const chatPrompt = \`\${SCHEMAS_CONTEXT}\n\nUser Question: "\${prompt}"\`;
+    const chatPrompt = `${SCHEMAS_CONTEXT}\n\nUser Question: "${prompt}"`;
     const result = await model.generateContent(chatPrompt);
     const responseText = result.response.text().trim();
     
     let jsonString = responseText;
-    if (jsonString.startsWith('\`\`\`json')) jsonString = jsonString.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
-    else if (jsonString.startsWith('\`\`\`')) jsonString = jsonString.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
+    if (jsonString.startsWith('```json')) jsonString = jsonString.replace(/^```json/, '').replace(/```$/, '').trim();
+    else if (jsonString.startsWith('```')) jsonString = jsonString.replace(/^```/, '').replace(/```$/, '').trim();
 
     let queryObj;
     try {
@@ -80,7 +80,7 @@ router.post('/ask', async (req, res) => {
     const { model: targetModel, method, query } = queryObj;
 
     if (!['find', 'aggregate'].includes(method)) return res.status(400).json({ success: false, message: 'Only read operations are permitted.' });
-    if (!['Order', 'Product', 'User'].includes(targetModel)) return res.status(400).json({ success: false, message: \`Invalid model: \${targetModel}\` });
+    if (!['Order', 'Product', 'User'].includes(targetModel)) return res.status(400).json({ success: false, message: `Invalid model: ${targetModel}` });
 
     const MongooseModel = mongoose.model(targetModel);
     let dbResult;
@@ -92,12 +92,12 @@ router.post('/ask', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Error executing database query.' });
     }
 
-    const summaryPrompt = \`You are a helpful assistant for an admin dashboard. 
-The user asked: "\${prompt}"
+    const summaryPrompt = `You are a helpful assistant for an admin dashboard. 
+The user asked: "${prompt}"
 The raw data from the database is:
-\${JSON.stringify(dbResult).slice(0, 5000)}
+${JSON.stringify(dbResult).slice(0, 5000)}
 
-Provide a natural, friendly, and concise English summary answering the user's question based on this data. Do not show the raw JSON. Just give the answer.\`;
+Provide a natural, friendly, and concise English summary answering the user's question based on this data. Do not show the raw JSON. Just give the answer.`;
 
     const summaryRes = await summaryModel.generateContent(summaryPrompt);
     const finalAnswer = summaryRes.response.text().trim();

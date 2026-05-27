@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,10 +10,10 @@ export default function Footer() {
             <h3>Mac<span>Miller</span></h3>
             <p>Your destination for casual fashion. Curating the best from world-class brands to elevate your everyday style.</p>
             <div className="footer-social">
-              <a href="#" aria-label="Instagram">IG</a>
-              <a href="#" aria-label="Twitter">TW</a>
-              <a href="#" aria-label="Facebook">FB</a>
-              <a href="#" aria-label="YouTube">YT</a>
+              <a href="#" aria-label="Instagram"><Instagram size={20} /></a>
+              <a href="#" aria-label="Twitter"><Twitter size={20} /></a>
+              <a href="#" aria-label="Facebook"><Facebook size={20} /></a>
+              <a href="#" aria-label="YouTube"><Youtube size={20} /></a>
             </div>
           </div>
           <div className="footer-col">
@@ -37,13 +38,6 @@ export default function Footer() {
             <a href="#">Returns</a>
             <a href="#">Size Guide</a>
             <a href="#">FAQ</a>
-            <div className="footer-newsletter">
-              <h4 style={{marginTop: '24px'}}>Newsletter</h4>
-              <div className="footer-newsletter-form">
-                <input type="email" placeholder="Your email" />
-                <button>Join</button>
-              </div>
-            </div>
           </div>
         </div>
         <div className="footer-bottom">
