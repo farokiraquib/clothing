@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-const summaryModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+const summaryModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 const SCHEMAS_CONTEXT = `
 You are an expert MongoDB developer. Given the user's natural language question and the Mongoose schemas below, you must generate a MongoDB query to answer their question.
