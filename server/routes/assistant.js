@@ -74,11 +74,28 @@ Mongoose Schemas:
 
 router.post('/ask', async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, history = [] } = req.body;
     if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
     if (!process.env.GEMINI_API_KEY) return res.status(500).json({ success: false, message: 'GEMINI_API_KEY is missing' });
 
-    const chatPrompt = `${SCHEMAS_CONTEXT}\n\nUser Question: "${prompt}"`;
+    let historyString = '';
+    if (history && history.length > 0) {
+      // Exclude the very first AI welcome message from being confusing
+      const filteredHistory = history.filter(msg => msg.id !== '1'); 
+      historyString = filteredHistory.map(msg => `${msg.sender === 'user' ? 'User' : 'Jarvis'}: ${msg.text}`).join('\n');
+    }
+
+    const currentDate = new Date().toISOString();
+
+    const chatPrompt = `${SCHEMAS_CONTEXT}
+    
+Current Server Date/Time: ${currentDate}
+
+PREVIOUS CHAT HISTORY FOR CONTEXT:
+${historyString || 'No previous history.'}
+
+NEW QUESTION TO ANSWER:
+User: "${prompt}"`;
     
     // Attempt generation with fallback
     const responseText = await generateWithFallback(chatPrompt, PRO_MODELS);
@@ -110,9 +127,15 @@ router.post('/ask', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Error executing database query.' });
     }
 
-    const summaryPrompt = `You are a helpful assistant for an admin dashboard. 
-The user asked: "${prompt}"
-The raw data from the database is:
+    const summaryPrompt = `You are Jarvis, a highly intelligent and helpful assistant for an e-commerce admin dashboard. 
+Current Server Date/Time: ${currentDate}
+
+PREVIOUS CHAT HISTORY FOR CONTEXT:
+${historyString || 'No previous history.'}
+
+The user just asked: "${prompt}"
+
+The raw data retrieved from the database to answer this is:
 ${JSON.stringify(dbResult).slice(0, 5000)}
 
 Provide a natural, friendly, and concise English summary answering the user's question based on this data. Do not show the raw JSON. Just give the answer.`;
