@@ -12,6 +12,7 @@ import ordersRouter from './routes/orders.js';
 import adminRouter from './routes/admin.js';
 import reviewsRouter from './routes/reviews.js';
 import authRouter from './routes/auth.js';
+import assistantRouter from './routes/assistant.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,6 +36,7 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/assistant', assistantRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
