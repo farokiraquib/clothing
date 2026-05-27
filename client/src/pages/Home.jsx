@@ -163,7 +163,7 @@ export default function Home() {
   const [loadingMoreProducts, setLoadingMoreProducts] = useState(false);
   const [newArrivals, setNewArrivals] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [slides, setSlides] = useState(STATIC_SLIDES);
+  const [slides, setSlides] = useState(null);
   const [currentPromo, setCurrentPromo] = useState(0);
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -221,8 +221,16 @@ export default function Home() {
     getCategories().then(setCategories).catch(() => {});
     // Load banners from DB; fall back to static if none uploaded yet
     getBanners()
-      .then(res => { if (res && res.length > 0) setSlides(res.map(normalizeBanner)); })
-      .catch(() => {});
+      .then(res => { 
+        if (res && res.length > 0) {
+          setSlides(res.map(normalizeBanner)); 
+        } else {
+          setSlides(STATIC_SLIDES);
+        }
+      })
+      .catch(() => {
+        setSlides(STATIC_SLIDES);
+      });
   }, []);
 
   useEffect(() => {
@@ -251,7 +259,11 @@ export default function Home() {
 
       {/* ★ Hero Slideshow — powered by DB banners */}
       <div className="container" style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
-        <HeroSlideshow slides={slides} />
+        {slides ? (
+          <HeroSlideshow slides={slides} />
+        ) : (
+          <div className="hero-slider" style={{ background: '#f4f4f5', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
+        )}
       </div>
 
       {/* Trust Strip — hidden on mobile to save space */}
