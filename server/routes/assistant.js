@@ -4,8 +4,25 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
-const summaryModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+// Fallback chain: Pro -> Flash -> Flash Lite -> Legacy Latest
+const PRO_MODELS = ['gemini-2.5-pro', 'gemini-pro-latest', 'gemini-2.5-flash'];
+const SUMMARY_MODELS = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+
+async function generateWithFallback(prompt, modelList) {
+  let lastError;
+  for (const modelName of modelList) {
+    try {
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      return result.response.text().trim();
+    } catch (err) {
+      console.warn(`Model ${modelName} failed:`, err.message);
+      lastError = err;
+    }
+  }
+  throw lastError; // If all fallback models fail, throw the last error
+}
 
 const SCHEMAS_CONTEXT = `
 You are an expert MongoDB developer. Given the user's natural language question and the Mongoose schemas below, you must generate a MongoDB query to answer their question.
@@ -62,8 +79,9 @@ router.post('/ask', async (req, res) => {
     if (!process.env.GEMINI_API_KEY) return res.status(500).json({ success: false, message: 'GEMINI_API_KEY is missing' });
 
     const chatPrompt = `${SCHEMAS_CONTEXT}\n\nUser Question: "${prompt}"`;
-    const result = await model.generateContent(chatPrompt);
-    const responseText = result.response.text().trim();
+    
+    // Attempt generation with fallback
+    const responseText = await generateWithFallback(chatPrompt, PRO_MODELS);
     
     let jsonString = responseText;
     if (jsonString.startsWith('```json')) jsonString = jsonString.replace(/^```json/, '').replace(/```$/, '').trim();
@@ -99,8 +117,8 @@ ${JSON.stringify(dbResult).slice(0, 5000)}
 
 Provide a natural, friendly, and concise English summary answering the user's question based on this data. Do not show the raw JSON. Just give the answer.`;
 
-    const summaryRes = await summaryModel.generateContent(summaryPrompt);
-    const finalAnswer = summaryRes.response.text().trim();
+    // Attempt summary generation with fallback
+    const finalAnswer = await generateWithFallback(summaryPrompt, SUMMARY_MODELS);
 
     res.json({ success: true, answer: finalAnswer });
   } catch (error) {
