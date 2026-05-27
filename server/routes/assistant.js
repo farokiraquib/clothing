@@ -105,7 +105,7 @@ Provide a natural, friendly, and concise English summary answering the user's qu
     res.json({ success: true, answer: finalAnswer });
   } catch (error) {
     console.error('Assistant Error:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
   }
 });
 
