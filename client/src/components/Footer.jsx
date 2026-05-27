@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
+import { FaInstagram, FaTwitter, FaFacebook, FaYoutube } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -10,10 +10,10 @@ export default function Footer() {
             <h3>Mac<span>Miller</span></h3>
             <p>Your destination for casual fashion. Curating the best from world-class brands to elevate your everyday style.</p>
             <div className="footer-social">
-              <a href="#" aria-label="Instagram"><Instagram size={20} /></a>
-              <a href="#" aria-label="Twitter"><Twitter size={20} /></a>
-              <a href="#" aria-label="Facebook"><Facebook size={20} /></a>
-              <a href="#" aria-label="YouTube"><Youtube size={20} /></a>
+              <a href="#" aria-label="Instagram"><FaInstagram size={20} /></a>
+              <a href="#" aria-label="Twitter"><FaTwitter size={20} /></a>
+              <a href="#" aria-label="Facebook"><FaFacebook size={20} /></a>
+              <a href="#" aria-label="YouTube"><FaYoutube size={20} /></a>
             </div>
           </div>
           <div className="footer-col">
