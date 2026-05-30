@@ -27,14 +27,21 @@ async function generateWithFallback(prompt, modelList) {
 const SCHEMAS_CONTEXT = `
 You are an expert MongoDB developer. Given the user's natural language question and the Mongoose schemas below, you must generate a MongoDB query to answer their question.
 You must return PURE JSON ONLY. No markdown formatting, no backticks, no explanations. 
-The JSON must have this exact structure:
+
+If the user's message is a greeting (like "hi", "hello") or a general conversation that does not require checking the database, return:
+{ "directAnswer": "Your friendly conversational response here" }
+
+If the question requires database access, return:
 {
   "model": "Order" | "Product" | "User",
   "method": "find" | "aggregate",
-  "query": <the query object or aggregation pipeline array>
+  "query": <the query object or aggregation pipeline array>,
+  "sort": <optional sort object, e.g. {"createdAt": -1}>,
+  "limit": <optional limit number, e.g. 1>
 }
 
 ONLY use read-only operations ('find' or 'aggregate'). Do not mutate data.
+If using 'aggregate', the query MUST be an array.
 
 Mongoose Schemas:
 1. Order
@@ -112,7 +119,11 @@ User: "${prompt}"`;
       return res.status(500).json({ success: false, message: 'Failed to generate a valid database query.' });
     }
 
-    const { model: targetModel, method, query } = queryObj;
+    const { model: targetModel, method, query, sort, limit, directAnswer } = queryObj;
+
+    if (directAnswer) {
+      return res.json({ success: true, answer: directAnswer });
+    }
 
     if (!['find', 'aggregate'].includes(method)) return res.status(400).json({ success: false, message: 'Only read operations are permitted.' });
     if (!['Order', 'Product', 'User'].includes(targetModel)) return res.status(400).json({ success: false, message: `Invalid model: ${targetModel}` });
@@ -120,8 +131,18 @@ User: "${prompt}"`;
     const MongooseModel = mongoose.model(targetModel);
     let dbResult;
     try {
-      if (method === 'find') dbResult = await MongooseModel.find(query).limit(50).lean();
-      else if (method === 'aggregate') dbResult = await MongooseModel.aggregate(query);
+      if (method === 'find') {
+        let dbQuery = MongooseModel.find(query || {});
+        if (sort) dbQuery = dbQuery.sort(sort);
+        dbResult = await dbQuery.limit(limit || 50).lean();
+      } else if (method === 'aggregate') {
+        if (!Array.isArray(query)) {
+          console.warn("Gemini provided non-array aggregate query, attempting to wrap:", query);
+          dbResult = await MongooseModel.aggregate([query]);
+        } else {
+          dbResult = await MongooseModel.aggregate(query);
+        }
+      }
     } catch (dbErr) {
       console.error('Database query error:', dbErr);
       return res.status(500).json({ success: false, message: 'Error executing database query.' });
