@@ -6,6 +6,7 @@ import Product from '../models/Product.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { sendOrderNotification } from '../utils/pushNotifications.js';
+import { sendOrderConfirmationEmail, sendOrderShippedEmail } from '../utils/emailService.js';
 import { createQikinkOrder } from '../services/qikinkService.js';
 
 const razorpay = new Razorpay({
@@ -93,6 +94,7 @@ router.post('/razorpay/verify', async (req, res) => {
       // Fire push notification only after successful payment
       if (updatedOrder) {
         sendOrderNotification(updatedOrder).catch(err => console.error('[push] Error:', err));
+        sendOrderConfirmationEmail(updatedOrder).catch(err => console.error('[email] Error:', err));
       }
 
       res.json({ success: true, message: 'Payment verified successfully' });
@@ -154,12 +156,19 @@ router.put('/:id', adminAuth, async (req, res) => {
     const order = await Order.findOne({ id: req.params.id });
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
+    const isNewlyShipped = req.body.status === 'Shipped' && order.status !== 'Shipped';
+
     if (req.body.status) order.status = req.body.status;
     if (req.body.paymentStatus) order.paymentStatus = req.body.paymentStatus;
     if (req.body.trackingLink !== undefined) order.trackingLink = req.body.trackingLink;
     if (req.body.trackingNumber !== undefined) order.trackingNumber = req.body.trackingNumber;
 
     const saved = await order.save();
+    
+    if (isNewlyShipped) {
+      sendOrderShippedEmail(saved).catch(err => console.error('[email] Error:', err));
+    }
+
     res.json(saved);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update order' });
