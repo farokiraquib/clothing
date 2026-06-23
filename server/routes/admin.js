@@ -47,7 +47,7 @@ router.post('/upload', adminAuth, (req, res) => {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No files provided' });
     }
-    const urls = req.files.map(f => f.path);
+    const urls = req.files.map(f => f.path || f.secure_url || f.url);
     res.json({ urls });
   });
 });
