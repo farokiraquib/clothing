@@ -150,7 +150,7 @@ export default function ProductDetail() {
               >
                 {product.images?.length > 0 ? product.images.map((img, i) => (
                   <div key={i} style={{flex:'0 0 100%', width:'100%', height:'100%', scrollSnapAlign:'start'}}>
-                    {img.startsWith('/uploads') || img.startsWith('http') ? (
+                    {img?.startsWith('/uploads') || img?.startsWith('http') ? (
                       <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                     ) : (
                       <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#999',fontWeight:600}}>
@@ -181,7 +181,7 @@ export default function ProductDetail() {
               <div style={{display:'flex',gap:12,marginTop:12,overflowX:'auto'}}>
                 {product.images.map((img, idx) => (
                   <div key={idx} style={{width:80,height:80,flexShrink:0,cursor:'pointer',border:mainImageIndex === idx ? '2px solid var(--text-primary)' : '2px solid transparent',borderRadius:8,overflow:'hidden'}} onClick={() => scrollToImage(idx)}>
-                    {img.startsWith('http') || img.startsWith('/uploads') ? (
+                    {img?.startsWith('http') || img?.startsWith('/uploads') ? (
                        <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={`${product.name} ${idx}`} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                     ) : (
                       <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)'}} />

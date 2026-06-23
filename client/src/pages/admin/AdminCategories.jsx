@@ -65,7 +65,7 @@ export default function AdminCategories() {
                 <h3 style={{textTransform:'capitalize',marginBottom:16,fontSize:18}}>{c.name}</h3>
                 <div style={{width:'100%',aspectRatio:'3/4',backgroundColor:'var(--bg-secondary)',borderRadius:8,overflow:'hidden',marginBottom:16,position:'relative'}}>
                   {c.image ? (
-                    <img src={c.image.startsWith('/uploads') ? `${API_ROOT}${c.image}` : c.image} alt={c.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                    <img src={c.image?.startsWith('/uploads') ? `${API_ROOT}${c.image}` : c.image} alt={c.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                   ) : (
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100%',color:'var(--text-tertiary)'}}>No Image</div>
                   )}
