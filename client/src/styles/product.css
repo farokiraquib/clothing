@@ -349,6 +349,7 @@
   display: flex;
   gap: var(--space-3);
   margin-bottom: var(--space-8);
+  flex-wrap: wrap;
 }
 
 .color-swatch {
