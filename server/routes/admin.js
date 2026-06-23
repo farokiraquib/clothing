@@ -6,6 +6,7 @@ import Order from '../models/Order.js';
 import Settings from '../models/Settings.js';
 import { Expo } from 'expo-server-sdk';
 import mongoose from 'mongoose';
+import { sendOrderShippedEmail } from '../utils/emailService.js';
 
 const router = express.Router();
 
@@ -235,14 +236,22 @@ router.put('/mobile/orders/:id/status', async (req, res) => {
   const { status } = req.body;
   if (!status) return res.status(400).json({ success: false });
   try {
-    const result = await Order.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(req.params.id) },
-      { $set: { status, updatedAt: new Date() } },
-      { new: true }
-    );
-    if (!result) return res.status(404).json({ success: false });
-    res.json({ success: true, order: result });
+    const order = await Order.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
+    if (!order) return res.status(404).json({ success: false });
+
+    const isNewlyShipped = status === 'Shipped' && order.status !== 'Shipped';
+
+    order.status = status;
+    order.updatedAt = new Date();
+    await order.save();
+
+    if (isNewlyShipped) {
+      sendOrderShippedEmail(order).catch(err => console.error('[email] Error from mobile app trigger:', err));
+    }
+
+    res.json({ success: true, order });
   } catch (err) {
+    console.error('Error updating status from mobile:', err);
     res.status(500).json({ success: false });
   }
 });
