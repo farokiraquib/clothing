@@ -1,6 +1,8 @@
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinaryPKG from 'cloudinary';
 import CloudinaryStorage from 'multer-storage-cloudinary';
 import multer from 'multer';
+
+const cloudinary = cloudinaryPKG.v2;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,7 +11,7 @@ cloudinary.config({
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary,
+  cloudinary: cloudinaryPKG,
   params: {
     folder: 'supremeit',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
