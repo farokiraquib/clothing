@@ -440,15 +440,13 @@ export default function AdminAddProduct() {
                   <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}><input type="checkbox" name="newArrival" checked={form.newArrival} onChange={handleChange} /> New Arrival</label>
                   <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}><input type="checkbox" name="isCustomizable" checked={form.isCustomizable} onChange={handleChange} /> Enable Customization</label>
                 </div>
-                {form.isCustomizable && (
-                  <div className="input-group full-width" style={{marginTop:8}}>
-                    <div>
-                      <label>Qikink Print Type ID</label>
-                      <input className="input" type="number" name="qikinkPrintTypeId" value={form.qikinkPrintTypeId} onChange={handleChange} placeholder="e.g. 5 for Sublimation" />
-                      <p style={{fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4}}>Required for custom image uploads (e.g. 5 = Sublimation, 1 = DTG)</p>
-                    </div>
+                <div className="input-group full-width" style={{marginTop:8}}>
+                  <div>
+                    <label>Qikink Print Type ID</label>
+                    <input className="input" type="number" name="qikinkPrintTypeId" value={form.qikinkPrintTypeId} onChange={handleChange} placeholder="e.g. 2 for DTF" />
+                    <p style={{fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4}}>Required to specify print technology (e.g. 1 = DTG, 2 = DTF, 5 = Sublimation)</p>
                   </div>
-                )}
+                </div>
 
                 {/* Qikink SKU — shown for ALL products */}
                 <div className="input-group full-width" style={{marginTop:8}}>
