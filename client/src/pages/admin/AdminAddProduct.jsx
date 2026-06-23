@@ -391,12 +391,15 @@ export default function AdminAddProduct() {
                   <label>Images</label>
                   {isEdit && existingImages.length > 0 && (
                     <div style={{display:'flex',gap:12,marginBottom:16,flexWrap:'wrap'}}>
-                      {existingImages.map((img, idx) => (
-                        <div key={idx} style={{position:'relative',width:80,height:80,borderRadius:8,overflow:'hidden',border:'1px solid var(--border)'}}>
-                          <img src={img.startsWith('/uploads') ? `http://localhost:5000${img}` : img} alt="product" style={{width:'100%',height:'100%',objectFit:'cover'}} />
-                          <button type="button" onClick={() => setExistingImages(existingImages.filter((_, i) => i !== idx))} style={{position:'absolute',top:4,right:4,background:'rgba(0,0,0,0.5)',color:'#fff',borderRadius:'50%',width:20,height:20,display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}><X size={12} /></button>
-                        </div>
-                      ))}
+                      {existingImages.map((img, idx) => {
+                        if (!img) return null;
+                        return (
+                          <div key={idx} style={{position:'relative',width:80,height:80,borderRadius:8,overflow:'hidden',border:'1px solid var(--border)'}}>
+                            <img src={img.startsWith('/uploads') ? `http://localhost:5000${img}` : img} alt="product" style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                            <button type="button" onClick={() => setExistingImages(existingImages.filter((_, i) => i !== idx))} style={{position:'absolute',top:4,right:4,background:'rgba(0,0,0,0.5)',color:'#fff',borderRadius:'50%',width:20,height:20,display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}><X size={12} /></button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                   <input type="file" multiple accept="image/*" onChange={(e) => setImages(Array.from(e.target.files))} />
