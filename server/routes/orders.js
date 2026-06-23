@@ -231,28 +231,27 @@ router.post('/:id/qikink', adminAuth, async (req, res) => {
     // Parse the items for Qikink payload format
     const qikinkItemsPayload = qikinkItems.map(item => {
       const itemPayload = {
-        search_from_my_products: 0,
         quantity: item.quantity.toString(),
         price: order.total.toString(),
         sku: item.sku
       };
 
-      // Determine which design image to use
-      const designImage = item.design_url || item.productDesignUrl;
-
-      if (designImage) {
+      if (item.isCustomizable && item.design_url) {
+        // Dynamic order: User uploaded a custom design
+        itemPayload.search_from_my_products = 0;
         itemPayload.designs = [{
           design_code: "Custom-Upload",
           width_inches: "",
           height_inches: "",
           placement_sku: "fr",
-          design_link: designImage,
-          mockup_link: designImage
+          design_link: item.design_url,
+          mockup_link: item.design_url
         }];
-        itemPayload.print_type_id = item.printTypeId || 5;
+        itemPayload.print_type_id = item.printTypeId || 1; // Let Qikink use the specified print type
       } else {
-        // Fallback: plain product (no design available)
-        itemPayload.print_type_id = 1;
+        // Standard order: Store owner designed this product in Qikink dashboard
+        // Qikink will automatically pull the design and correct print type (DTF, DTG, etc.) from the saved SKU
+        itemPayload.search_from_my_products = 1;
       }
       
       return itemPayload;
