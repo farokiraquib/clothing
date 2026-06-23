@@ -13,7 +13,7 @@ export const sendOrderConfirmationEmail = async (order) => {
     }
 
     const { data, error } = await resend.emails.send({
-      from: 'Orders <onboarding@resend.dev>', // Change this to your verified domain later
+      from: process.env.RESEND_FROM_EMAIL || 'Orders <onboarding@resend.dev>',
       to: order.customer.email,
       subject: `Order Confirmed - ${order.id}`,
       template: {
@@ -50,7 +50,7 @@ export const sendOrderShippedEmail = async (order) => {
     }
 
     const { data, error } = await resend.emails.send({
-      from: 'Orders <onboarding@resend.dev>', // Change this to your verified domain later
+      from: process.env.RESEND_FROM_EMAIL || 'Orders <onboarding@resend.dev>', // Change this to your verified domain later
       to: order.customer.email,
       subject: `Your Order ${order.id} has shipped!`,
       template: {
