@@ -184,9 +184,25 @@ router.post('/:id/qikink', adminAuth, async (req, res) => {
       // Since we added qikinkSku to Product, we need to fetch the product to get the SKU
       const product = await Product.findOne({ id: item.productId });
       
-      if (product && product.qikinkSku) {
+      if (product && (product.qikinkSku || (product.qikinkVariants && product.qikinkVariants.length > 0))) {
+        let finalSku = product.qikinkSku;
+        
+        // Lookup specific variant SKU if variations exist
+        if (product.qikinkVariants && product.qikinkVariants.length > 0) {
+          const matchedVariant = product.qikinkVariants.find(v => 
+            v.color.toLowerCase() === (item.color || 'Default').toLowerCase() && 
+            v.size.toLowerCase() === (item.size || 'Default').toLowerCase()
+          );
+          if (matchedVariant && matchedVariant.sku) {
+            finalSku = matchedVariant.sku;
+          }
+        }
+        
+        // If we still don't have a SKU, skip
+        if (!finalSku) continue;
+
         qikinkItems.push({
-          sku: product.qikinkSku,
+          sku: finalSku,
           quantity: item.quantity || 1,
           size: item.size || 'M',
           color: item.color || 'White',

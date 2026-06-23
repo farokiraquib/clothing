@@ -145,7 +145,8 @@ router.post('/', adminAuth, upload.array('images', 5), async (req, res) => {
       reviews: 0,
       isCustomizable: req.body.isCustomizable === 'true',
       qikinkSku: req.body.qikinkSku || '',
-      qikinkPrintTypeId: req.body.qikinkPrintTypeId ? Number(req.body.qikinkPrintTypeId) : 1
+      qikinkPrintTypeId: req.body.qikinkPrintTypeId ? Number(req.body.qikinkPrintTypeId) : 1,
+      qikinkVariants: req.body.qikinkVariants ? JSON.parse(req.body.qikinkVariants) : []
     });
     
     const saved = await newProduct.save();
@@ -184,6 +185,7 @@ router.put('/:id', adminAuth, upload.array('images', 5), async (req, res) => {
     if (req.body.isCustomizable !== undefined) product.isCustomizable = req.body.isCustomizable === 'true';
     if (req.body.qikinkSku !== undefined) product.qikinkSku = req.body.qikinkSku;
     if (req.body.qikinkPrintTypeId !== undefined) product.qikinkPrintTypeId = Number(req.body.qikinkPrintTypeId);
+    if (req.body.qikinkVariants !== undefined) product.qikinkVariants = JSON.parse(req.body.qikinkVariants);
 
     const saved = await product.save();
     res.json(saved);
