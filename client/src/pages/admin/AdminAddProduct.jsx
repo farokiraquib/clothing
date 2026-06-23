@@ -122,6 +122,7 @@ export default function AdminAddProduct() {
       fd.append('newArrival', String(form.newArrival));
       fd.append('isCustomizable', String(form.isCustomizable));
       if (form.qikinkSku) fd.append('qikinkSku', form.qikinkSku);
+      if (form.qikinkPrintTypeId !== undefined) fd.append('qikinkPrintTypeId', form.qikinkPrintTypeId);
       
       const variantsPayload = [];
       Object.keys(qikinkVariants).forEach(key => {
