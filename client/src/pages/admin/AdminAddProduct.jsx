@@ -35,8 +35,7 @@ export default function AdminAddProduct() {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState([]);
-  const [existingImages, setExistingImages] = useState([]);
+  const [combinedImages, setCombinedImages] = useState([]);
   const [customBrandName, setCustomBrandName] = useState('');
   const [form, setForm] = useState({
     productType: '', name: '', brand: '', category: '', subcategory: '', price: '', comparePrice: '',
@@ -71,8 +70,9 @@ export default function AdminAddProduct() {
           });
         }
         setQikinkVariants(existingVariants);
+        setQikinkVariants(existingVariants);
         setColorList(p.colors && p.colors.length > 0 && p.colors[0].name !== 'Default' ? p.colors : []);
-        setExistingImages(p.images || []);
+        setCombinedImages((p.images || []).map(url => ({ type: 'existing', url })));
       }).catch(() => {});
     }
   }, [isAdmin, id]);
@@ -120,7 +120,6 @@ export default function AdminAddProduct() {
       fd.append('stock', form.stock);
       fd.append('featured', String(form.featured));
       fd.append('newArrival', String(form.newArrival));
-      fd.append('existingImages', JSON.stringify(existingImages));
       fd.append('isCustomizable', String(form.isCustomizable));
       if (form.qikinkSku) fd.append('qikinkSku', form.qikinkSku);
       
@@ -133,9 +132,18 @@ export default function AdminAddProduct() {
       });
       fd.append('qikinkVariants', JSON.stringify(variantsPayload));
       
-      if (images.length > 0) {
-        images.forEach(img => fd.append('images', img));
-      }
+      const imageSequence = [];
+      let newFileIndex = 0;
+      combinedImages.forEach(img => {
+        if (img.type === 'existing') {
+          imageSequence.push({ type: 'existing', url: img.url });
+        } else {
+          fd.append('images', img.file);
+          imageSequence.push({ type: 'new', index: newFileIndex });
+          newFileIndex++;
+        }
+      });
+      fd.append('imageSequence', JSON.stringify(imageSequence));
 
       if (isEdit) await updateProduct(id, fd);
       else await addProduct(fd);
@@ -389,21 +397,41 @@ export default function AdminAddProduct() {
                 {/* Images — Always shown */}
                 <div className="input-group full-width">
                   <label>Images</label>
-                  {isEdit && existingImages.length > 0 && (
+                  {combinedImages.length > 0 && (
                     <div style={{display:'flex',gap:12,marginBottom:16,flexWrap:'wrap'}}>
-                      {existingImages.map((img, idx) => {
-                        if (!img) return null;
+                      {combinedImages.map((imgObj, idx) => {
+                        const src = imgObj.type === 'existing' ? (imgObj.url?.startsWith('/uploads') ? `http://localhost:5000${imgObj.url}` : imgObj.url) : imgObj.preview;
+                        if (!src) return null;
                         return (
-                          <div key={idx} style={{position:'relative',width:80,height:80,borderRadius:8,overflow:'hidden',border:'1px solid var(--border)'}}>
-                            <img src={img.startsWith('/uploads') ? `http://localhost:5000${img}` : img} alt="product" style={{width:'100%',height:'100%',objectFit:'cover'}} />
-                            <button type="button" onClick={() => setExistingImages(existingImages.filter((_, i) => i !== idx))} style={{position:'absolute',top:4,right:4,background:'rgba(0,0,0,0.5)',color:'#fff',borderRadius:'50%',width:20,height:20,display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}><X size={12} /></button>
+                          <div key={idx} style={{position:'relative',width:100,height:100,borderRadius:8,overflow:'hidden',border:'1px solid var(--border)'}}>
+                            <img src={src} alt={`Product ${idx+1}`} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                            <div style={{position:'absolute', bottom: 4, left: 4, display:'flex', gap: 4}}>
+                              {idx > 0 && (
+                                <button type="button" onClick={() => {
+                                  const arr = [...combinedImages];
+                                  [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+                                  setCombinedImages(arr);
+                                }} style={{background:'rgba(0,0,0,0.6)',color:'#fff',border:'none',borderRadius:4,cursor:'pointer',fontSize:12,padding:'2px 6px',fontWeight:'bold'}}>&lt;</button>
+                              )}
+                              {idx < combinedImages.length - 1 && (
+                                <button type="button" onClick={() => {
+                                  const arr = [...combinedImages];
+                                  [arr[idx+1], arr[idx]] = [arr[idx], arr[idx+1]];
+                                  setCombinedImages(arr);
+                                }} style={{background:'rgba(0,0,0,0.6)',color:'#fff',border:'none',borderRadius:4,cursor:'pointer',fontSize:12,padding:'2px 6px',fontWeight:'bold'}}>&gt;</button>
+                              )}
+                            </div>
+                            <button type="button" onClick={() => setCombinedImages(combinedImages.filter((_, i) => i !== idx))} style={{position:'absolute',top:4,right:4,background:'rgba(0,0,0,0.6)',color:'#fff',borderRadius:'50%',width:20,height:20,display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}><X size={12} /></button>
                           </div>
                         );
                       })}
                     </div>
                   )}
-                  <input type="file" multiple accept="image/*" onChange={(e) => setImages(Array.from(e.target.files))} />
-                  <p style={{fontSize: 12, color: 'var(--text-secondary)', marginTop: 4}}>Upload up to 5 images (jpg, png, webp). The first image will be the main product image.</p>
+                  <input type="file" multiple accept="image/*" onChange={(e) => {
+                    const newFiles = Array.from(e.target.files).map(file => ({ type: 'new', file, preview: URL.createObjectURL(file) }));
+                    setCombinedImages(prev => [...prev, ...newFiles]);
+                  }} />
+                  <p style={{fontSize: 12, color: 'var(--text-secondary)', marginTop: 4}}>Upload up to 5 images. The first image will be the main product image. Use the &lt; &gt; buttons to change their sequence.</p>
                 </div>
 
                 {/* Flags */}

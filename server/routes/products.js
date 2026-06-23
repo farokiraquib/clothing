@@ -122,7 +122,16 @@ router.get('/:id', async (req, res) => {
 router.post('/', adminAuth, upload.array('images', 5), async (req, res) => {
   try {
     // Cloudinary older versions return URL in f.secure_url or f.url instead of f.path
-    const images = req.files ? req.files.map(f => f.path || f.secure_url || f.url) : [];
+    const uploadedImages = req.files ? req.files.map(f => f.path || f.secure_url || f.url) : [];
+    
+    let finalImages = uploadedImages;
+    if (req.body.imageSequence) {
+      const seq = JSON.parse(req.body.imageSequence);
+      finalImages = seq.map(item => {
+        if (item.type === 'new') return uploadedImages[item.index];
+        return item.url;
+      }).filter(Boolean);
+    }
     
     const newProduct = new Product({
       id: `prod-${uuidv4().slice(0, 8)}`,
@@ -137,7 +146,7 @@ router.post('/', adminAuth, upload.array('images', 5), async (req, res) => {
       sizes: JSON.parse(req.body.sizes || '[]'),
       colors: JSON.parse(req.body.colors || '[]'),
       material: req.body.material || '',
-      images: images, 
+      images: finalImages, 
       stock: Number(req.body.stock || 0),
       featured: req.body.featured === 'true',
       newArrival: req.body.newArrival === 'true',
@@ -163,8 +172,18 @@ router.put('/:id', adminAuth, upload.array('images', 5), async (req, res) => {
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
     const newImages = req.files ? req.files.map(f => f.path || f.secure_url || f.url) : [];
-    const retainedImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : product.images;
-
+    
+    if (req.body.imageSequence) {
+      const seq = JSON.parse(req.body.imageSequence);
+      product.images = seq.map(item => {
+        if (item.type === 'existing') return item.url;
+        if (item.type === 'new') return newImages[item.index];
+      }).filter(Boolean);
+    } else {
+      const retainedImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : product.images;
+      product.images = [...retainedImages, ...newImages];
+    }
+    
     if (req.body.productType) product.productType = req.body.productType;
     if (req.body.name) product.name = req.body.name;
     if (req.body.brand !== undefined) product.brand = req.body.brand;
@@ -176,8 +195,6 @@ router.put('/:id', adminAuth, upload.array('images', 5), async (req, res) => {
     if (req.body.sizes) product.sizes = JSON.parse(req.body.sizes);
     if (req.body.colors) product.colors = JSON.parse(req.body.colors);
     if (req.body.material !== undefined) product.material = req.body.material;
-    
-    product.images = [...retainedImages, ...newImages];
     
     if (req.body.stock !== undefined) product.stock = Number(req.body.stock);
     if (req.body.featured !== undefined) product.featured = req.body.featured === 'true';
