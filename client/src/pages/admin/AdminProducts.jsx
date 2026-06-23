@@ -68,8 +68,8 @@ export default function AdminProducts() {
                   <td>
                     <div className="admin-table-product">
                       <div style={{width:48,height:48,borderRadius:6,overflow:'hidden',background:'var(--bg-surface)'}}>
-                        {p.images?.[0]?.startsWith('/uploads') ? (
-                          <img src={`${API_ROOT}${p.images[0]}`} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                        {p.images?.[0]?.startsWith('/uploads') || p.images?.[0]?.startsWith('http') ? (
+                          <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_ROOT}${p.images[0]}`} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                         ) : (
                           <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',fontSize:10,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:600}}>{p.brand?.substring(0,3).toUpperCase()}</div>
                         )}

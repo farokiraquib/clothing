@@ -41,8 +41,8 @@ export default function Wishlist() {
             <div key={product.id} className="product-card">
               <Link to={`/product/${product.id}`}>
                 <div className="product-card-image">
-                  {product.images?.[0]?.startsWith('/uploads') ? (
-                    <img src={`${API_ROOT}${product.images[0]}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                  {product.images?.[0]?.startsWith('/uploads') || product.images?.[0]?.startsWith('http') ? (
+                    <img src={product.images[0].startsWith('http') ? product.images[0] : `${API_ROOT}${product.images[0]}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                   ) : (
                     <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,color:'#999',fontWeight:500}}>
                       {product.brand?.toUpperCase()}

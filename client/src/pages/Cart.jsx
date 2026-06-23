@@ -34,8 +34,8 @@ export default function Cart() {
             {cart.map((item, index) => (
               <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="cart-item">
                 <div className="cart-item-image">
-                  {item.images?.[0]?.startsWith('/uploads') ? (
-                    <img src={`${API_ROOT}${item.images[0]}`} alt={item.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                  {item.images?.[0]?.startsWith('/uploads') || item.images?.[0]?.startsWith('http') ? (
+                    <img src={item.images[0].startsWith('http') ? item.images[0] : `${API_ROOT}${item.images[0]}`} alt={item.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                   ) : (
                     <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#999',fontWeight:500}}>
                       {item.brand?.toUpperCase()}
