@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { LayoutDashboard, Box, ClipboardList, Plus, LogOut, Package, ArrowLeft, X, Image as ImageIcon, Settings, Shirt, Watch, PawPrint, Footprints, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Box, ClipboardList, Plus, LogOut, Package, ArrowLeft, X, Image as ImageIcon, Settings, Shirt, Watch, PawPrint, Footprints, Sparkles, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { addProduct, updateProduct, getProduct, getBrands, getCategories, addBrand } from '../../api';
 
@@ -498,7 +498,16 @@ export default function AdminAddProduct() {
               </div>
               <div className="admin-form-actions">
                 <Link to="/admin/products" className="btn btn-outline">Cancel</Link>
-                <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? 'Saving...' : (isEdit ? 'Update Product' : 'Add Product')}</button>
+                <button type="submit" className="btn btn-primary" disabled={loading} style={{display: 'flex', alignItems: 'center', gap: 8}}>
+                  {loading ? (
+                    <>
+                      <Loader2 size={16} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                      Uploading & Saving...
+                    </>
+                  ) : (
+                    isEdit ? 'Update Product' : 'Add Product'
+                  )}
+                </button>
               </div>
             </form>
           </>

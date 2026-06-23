@@ -121,8 +121,8 @@ router.get('/:id', async (req, res) => {
 // POST /api/products — Admin: Add product
 router.post('/', adminAuth, upload.array('images', 5), async (req, res) => {
   try {
-    // Cloudinary returns full URL in file.path
-    const images = req.files ? req.files.map(f => f.path) : [];
+    // Cloudinary older versions return URL in f.secure_url or f.url instead of f.path
+    const images = req.files ? req.files.map(f => f.path || f.secure_url || f.url) : [];
     
     const newProduct = new Product({
       id: `prod-${uuidv4().slice(0, 8)}`,
@@ -162,7 +162,7 @@ router.put('/:id', adminAuth, upload.array('images', 5), async (req, res) => {
     const product = await Product.findOne({ id: req.params.id });
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
-    const newImages = req.files ? req.files.map(f => f.path) : [];
+    const newImages = req.files ? req.files.map(f => f.path || f.secure_url || f.url) : [];
     const retainedImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : product.images;
 
     if (req.body.productType) product.productType = req.body.productType;
