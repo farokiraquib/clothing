@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const WishlistContext = createContext();
 
-const WISHLIST_KEY = 'macmiller_wishlist';
+const WISHLIST_KEY = 'supremeit_wishlist';
 
 function getInitialWishlist() {
   try {

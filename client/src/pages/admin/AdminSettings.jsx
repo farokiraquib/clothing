@@ -14,7 +14,7 @@ function AdminSidebar({ active }) {
   const navigate = useNavigate();
   return (
     <aside className="admin-sidebar">
-      <div className="admin-sidebar-title">Mac Miller Admin</div>
+      <div className="admin-sidebar-title">SupremeIt Admin</div>
       <Link to="/admin/dashboard"  className={active === 'dashboard'  ? 'active' : ''}><LayoutDashboard size={18}/> Dashboard</Link>
       <Link to="/admin/products"   className={active === 'products'   ? 'active' : ''}><Box size={18}/> Products</Link>
       <Link to="/admin/orders"     className={active === 'orders'     ? 'active' : ''}><ClipboardList size={18}/> Orders</Link>

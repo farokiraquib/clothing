@@ -126,21 +126,26 @@ router.post('/', adminAuth, upload.array('images', 5), async (req, res) => {
     
     const newProduct = new Product({
       id: `prod-${uuidv4().slice(0, 8)}`,
+      productType: req.body.productType || 'clothing',
       name: req.body.name,
-      brand: req.body.brand,
+      brand: req.body.brand || '',
       category: req.body.category,
-      subcategory: req.body.subcategory,
+      subcategory: req.body.subcategory || '',
       price: Number(req.body.price),
       comparePrice: req.body.comparePrice ? Number(req.body.comparePrice) : null,
       description: req.body.description,
       sizes: JSON.parse(req.body.sizes || '[]'),
       colors: JSON.parse(req.body.colors || '[]'),
+      material: req.body.material || '',
       images: images, 
       stock: Number(req.body.stock || 0),
       featured: req.body.featured === 'true',
       newArrival: req.body.newArrival === 'true',
       rating: 0,
-      reviews: 0
+      reviews: 0,
+      isCustomizable: req.body.isCustomizable === 'true',
+      qikinkSku: req.body.qikinkSku || '',
+      qikinkPrintTypeId: req.body.qikinkPrintTypeId ? Number(req.body.qikinkPrintTypeId) : 1
     });
     
     const saved = await newProduct.save();
@@ -159,21 +164,26 @@ router.put('/:id', adminAuth, upload.array('images', 5), async (req, res) => {
     const newImages = req.files ? req.files.map(f => f.path) : [];
     const retainedImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : product.images;
 
+    if (req.body.productType) product.productType = req.body.productType;
     if (req.body.name) product.name = req.body.name;
-    if (req.body.brand) product.brand = req.body.brand;
+    if (req.body.brand !== undefined) product.brand = req.body.brand;
     if (req.body.category) product.category = req.body.category;
-    if (req.body.subcategory) product.subcategory = req.body.subcategory;
+    if (req.body.subcategory !== undefined) product.subcategory = req.body.subcategory;
     if (req.body.price) product.price = Number(req.body.price);
     if (req.body.comparePrice) product.comparePrice = Number(req.body.comparePrice);
     if (req.body.description) product.description = req.body.description;
     if (req.body.sizes) product.sizes = JSON.parse(req.body.sizes);
     if (req.body.colors) product.colors = JSON.parse(req.body.colors);
+    if (req.body.material !== undefined) product.material = req.body.material;
     
     product.images = [...retainedImages, ...newImages];
     
     if (req.body.stock !== undefined) product.stock = Number(req.body.stock);
     if (req.body.featured !== undefined) product.featured = req.body.featured === 'true';
     if (req.body.newArrival !== undefined) product.newArrival = req.body.newArrival === 'true';
+    if (req.body.isCustomizable !== undefined) product.isCustomizable = req.body.isCustomizable === 'true';
+    if (req.body.qikinkSku !== undefined) product.qikinkSku = req.body.qikinkSku;
+    if (req.body.qikinkPrintTypeId !== undefined) product.qikinkPrintTypeId = Number(req.body.qikinkPrintTypeId);
 
     const saved = await product.save();
     res.json(saved);

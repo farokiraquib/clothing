@@ -6,6 +6,7 @@ import Product from '../models/Product.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { sendOrderNotification } from '../utils/pushNotifications.js';
+import { createQikinkOrder } from '../services/qikinkService.js';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'mock_key_id',
@@ -112,6 +113,7 @@ router.post('/', async (req, res) => {
       items: req.body.items,
       subtotal: req.body.subtotal,
       shipping: req.body.shipping || 0,
+      addOns: req.body.addOns,
       total: req.body.total,
       status: 'Processing',
       paymentStatus: 'Pending'
@@ -154,11 +156,129 @@ router.put('/:id', adminAuth, async (req, res) => {
 
     if (req.body.status) order.status = req.body.status;
     if (req.body.paymentStatus) order.paymentStatus = req.body.paymentStatus;
+    if (req.body.trackingLink !== undefined) order.trackingLink = req.body.trackingLink;
+    if (req.body.trackingNumber !== undefined) order.trackingNumber = req.body.trackingNumber;
 
     const saved = await order.save();
     res.json(saved);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update order' });
+  }
+});
+
+// POST /api/orders/:id/qikink — Admin: Send order to Qikink
+router.post('/:id/qikink', adminAuth, async (req, res) => {
+  try {
+    const order = await Order.findOne({ id: req.params.id });
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    if (order.qikinkOrderId) {
+      return res.status(400).json({ error: 'Order has already been sent to Qikink' });
+    }
+
+    // Build the items array for Qikink
+    const qikinkItems = [];
+    for (const item of order.items) {
+      // Only process items that are customizable or have custom text/image
+      // In a real scenario, you'd map these to specific Qikink SKUs
+      // Since we added qikinkSku to Product, we need to fetch the product to get the SKU
+      const product = await Product.findOne({ id: item.productId });
+      
+      if (product && product.qikinkSku) {
+        qikinkItems.push({
+          sku: product.qikinkSku,
+          quantity: item.quantity || 1,
+          size: item.size || 'M',
+          color: item.color || 'White',
+          design_url: item.customImage || '',
+          productDesignUrl: (product.images && product.images.length > 0) ? product.images[0] : '',
+          custom_text: item.customText || '',
+          printTypeId: product.qikinkPrintTypeId,
+          isCustomizable: product.isCustomizable
+        });
+      }
+    }
+
+    if (qikinkItems.length === 0) {
+      return res.status(400).json({ error: 'No items found in this order that have a Qikink SKU assigned to them' });
+    }
+
+    // Parse the items for Qikink payload format
+    const qikinkItemsPayload = qikinkItems.map(item => {
+      const itemPayload = {
+        search_from_my_products: 0,
+        quantity: item.quantity.toString(),
+        price: order.total.toString(),
+        sku: item.sku
+      };
+
+      // Determine which design image to use
+      const designImage = item.design_url || item.productDesignUrl;
+
+      if (designImage) {
+        itemPayload.designs = [{
+          design_code: "Custom-Upload",
+          width_inches: "",
+          height_inches: "",
+          placement_sku: "fr",
+          design_link: designImage,
+          mockup_link: designImage
+        }];
+        itemPayload.print_type_id = item.printTypeId || 5;
+      } else {
+        // Fallback: plain product (no design available)
+        itemPayload.print_type_id = 1;
+      }
+      
+      return itemPayload;
+    });
+
+    const qikinkPayload = {
+      order_number: order.id.replace(/-/g, ''),
+      qikink_shipping: "1",
+      gateway: order.paymentStatus === 'Paid' ? 'Prepaid' : 'COD',
+      total_order_value: order.total.toString(),
+      shipping_address: {
+        first_name: order.customer.name.split(' ')[0] || 'Customer',
+        last_name: order.customer.name.split(' ').slice(1).join(' ') || '.',
+        phone: order.customer.phone || '',
+        email: order.customer.email || '',
+        address1: order.customer.address || '',
+        city: order.customer.city || '',
+        province: order.customer.state || 'Maharashtra',
+        zip: order.customer.pincode || '',
+        country_code: 'IN'
+      },
+      line_items: qikinkItemsPayload
+    };
+
+    // Make the API call to Qikink
+    try {
+      const qikinkResponse = await createQikinkOrder(qikinkPayload);
+      
+      // Qikink response will usually have a unique ID for the created order
+      const qikinkOrderId = qikinkResponse.order_id || qikinkResponse.order_number || 'UNKNOWN';
+
+      order.isSentToQikink = true;
+      order.qikinkOrderId = String(qikinkOrderId);
+      order.qikinkStatus = 'Sent';
+      await order.save();
+
+      res.json({ message: 'Order successfully sent to Qikink', qikinkOrderId });
+    } catch (apiError) {
+      // If the API error is a Duplicate Order, it means we've successfully sent it before
+      if (apiError.message && apiError.message.includes('Duplicate Order')) {
+        order.isSentToQikink = true;
+        order.qikinkOrderId = 'Duplicate';
+        order.qikinkStatus = 'Sent';
+        await order.save();
+        return res.json({ message: 'Order was already sent to Qikink successfully', qikinkOrderId: 'Duplicate' });
+      }
+      throw apiError;
+    }
+  } catch (err) {
+    console.error('Qikink Error:', err);
+    res.status(500).json({ error: 'Failed to send to Qikink', details: err.message });
   }
 });
 

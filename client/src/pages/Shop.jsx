@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal, X, Check } from 'lucide-react';
+import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
 import { getProducts, getBrands, getCategories } from '../api';
 

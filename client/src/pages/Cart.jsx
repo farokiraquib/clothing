@@ -2,14 +2,16 @@ import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { API_ROOT } from '../api';
+import SEO from '../components/SEO';
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal, cartCount, clearCart } = useCart();
   const formatPrice = (p) => `₹${p.toLocaleString('en-IN')}`;
-  const shipping = cartTotal > 1999 ? 0 : 99;
+  const shipping = cartTotal > 1999 ? 0 : 50;
 
   if (cart.length === 0) return (
     <div className="cart-page page-enter">
+      <SEO title="Your Cart" noindex />
       <div className="container">
         <div className="cart-empty">
           <ShoppingBag size={48} style={{color:'var(--text-tertiary)'}} />
@@ -23,6 +25,7 @@ export default function Cart() {
 
   return (
     <div className="cart-page page-enter">
+      <SEO title="Your Cart" noindex />
       <div className="container">
         <h1>Shopping Cart</h1>
         <p className="cart-count">{cartCount} item{cartCount !== 1 ? 's' : ''}</p>
@@ -46,6 +49,17 @@ export default function Cart() {
                     {item.selectedSize && <span>Size: {item.selectedSize}</span>}
                     {item.selectedColor && <span>Color: {item.selectedColor}</span>}
                   </div>
+                  {(item.customText || item.customImage) && (
+                    <div style={{marginTop:8, padding:'8px 12px', background:'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.08))', borderRadius:8, fontSize:12}}>
+                      <span style={{fontWeight:600, color:'var(--text-primary)', display:'flex', alignItems:'center', gap:4, marginBottom:4}}>✨ Custom Design</span>
+                      {item.customText && <p style={{margin:'2px 0', color:'var(--text-secondary)'}}>Text: "{item.customText}"</p>}
+                      {item.customImage && (
+                        <div style={{marginTop:6}}>
+                          <img src={item.customImage} alt="Custom design" style={{width:48, height:48, objectFit:'cover', borderRadius:6, border:'1px solid var(--border)'}} />
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className="cart-item-bottom">
                     <div className="cart-item-quantity">
                       <button onClick={() => updateQuantity(index, item.quantity - 1)}><Minus size={14} /></button>

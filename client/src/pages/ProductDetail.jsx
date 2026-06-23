@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Minus, Plus, Star, ShoppingBag, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Minus, Plus, Star, ShoppingBag, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Palette, Upload, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
-import { getProduct, getProducts, getReviews, submitReview, API_ROOT } from '../api';
+import { getProduct, getProducts, getReviews, submitReview, uploadCustomDesign, API_ROOT } from '../api';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -24,6 +25,12 @@ export default function ProductDetail() {
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, comment: '' });
   const [reviewStatus, setReviewStatus] = useState({ error: '', success: '' });
   const [cartAdded, setCartAdded] = useState(false);
+  const [showCustomizer, setShowCustomizer] = useState(false);
+  const [customText, setCustomText] = useState('');
+  const [customFile, setCustomFile] = useState(null);
+  const [customImagePreview, setCustomImagePreview] = useState('');
+  const [customImageUrl, setCustomImageUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -63,10 +70,42 @@ export default function ProductDetail() {
   const inWishlist = isInWishlist(product.id);
   const inCart = cart.some(item => item.id === product.id);
 
+  const handleCustomFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setCustomFile(file);
+    setCustomImagePreview(URL.createObjectURL(file));
+    setUploading(true);
+    try {
+      const result = await uploadCustomDesign(file);
+      setCustomImageUrl(result.url);
+    } catch (err) {
+      alert('Failed to upload design. Please try again.');
+      setCustomFile(null);
+      setCustomImagePreview('');
+    }
+    setUploading(false);
+  };
+
+  const handleRemoveCustomImage = () => {
+    setCustomFile(null);
+    setCustomImagePreview('');
+    setCustomImageUrl('');
+  };
+
   const handleAddToCart = () => {
     if (!selectedSize) return;
-    addToCart(product, selectedSize, selectedColor, quantity);
+    if (product.isCustomizable && !customImageUrl) {
+      alert('Please upload your design image before adding to cart. This product requires a custom design.');
+      return;
+    }
+    addToCart(product, selectedSize, selectedColor, quantity, customText, customImageUrl);
     setCartAdded(true);
+    setShowCustomizer(false);
+    setCustomText('');
+    setCustomFile(null);
+    setCustomImagePreview('');
+    setCustomImageUrl('');
     setTimeout(() => setCartAdded(false), 1800);
   };
 
@@ -89,6 +128,11 @@ export default function ProductDetail() {
 
   return (
     <div className="product-detail page-enter">
+      <SEO 
+        title={product.name} 
+        description={product.description || `Buy ${product.name} at SupremeIt. High quality fashion.`} 
+        image={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${API_ROOT}${product.images[0]}`) : undefined}
+      />
       <div className="container">
         <Link to="/shop" style={{display:'inline-flex',alignItems:'center',gap:8,color:'var(--text-secondary)',fontSize:14,marginBottom:24}}>
           <ArrowLeft size={16} /> Back to Shop
@@ -190,6 +234,85 @@ export default function ProductDetail() {
               <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)}><Plus size={16} /></button>
             </div>
 
+            {/* Customize Option */}
+            {product.isCustomizable && (
+              <div style={{marginTop:20}}>
+                <button
+                  type="button"
+                  onClick={() => setShowCustomizer(!showCustomizer)}
+                  style={{
+                    display:'flex', alignItems:'center', gap:10, width:'100%',
+                    padding:'14px 20px', border:'2px dashed var(--text-primary)',
+                    borderRadius:12, background: showCustomizer ? 'var(--text-primary)' : 'transparent',
+                    color: showCustomizer ? '#fff' : 'var(--text-primary)',
+                    cursor:'pointer', fontSize:15, fontWeight:600,
+                    transition:'all 0.3s ease'
+                  }}
+                >
+                  <Palette size={20} />
+                  {showCustomizer ? 'Close Customizer' : '✨ Add Your Own Design'}
+                </button>
+
+                {showCustomizer && (
+                  <div style={{
+                    marginTop:16, padding:24, border:'1px solid var(--border)',
+                    borderRadius:12, background:'var(--bg-surface)',
+                    animation:'fadeIn 0.3s ease'
+                  }}>
+                    <h4 style={{marginBottom:16, fontSize:16, fontWeight:600}}>Customize This Product</h4>
+
+                    {/* Custom Text */}
+                    <div style={{marginBottom:20}}>
+                      <label style={{display:'block', fontSize:13, fontWeight:600, marginBottom:8, color:'var(--text-secondary)'}}>Custom Text (optional)</label>
+                      <input
+                        type="text"
+                        className="input"
+                        placeholder="e.g., Your name, a quote, pet name..."
+                        value={customText}
+                        onChange={(e) => setCustomText(e.target.value)}
+                        maxLength={100}
+                        style={{width:'100%'}}
+                      />
+                      <p style={{fontSize:11, color:'var(--text-tertiary)', marginTop:4}}>{customText.length}/100 characters</p>
+                    </div>
+
+                    {/* Image Upload */}
+                    <div>
+                      <label style={{display:'block', fontSize:13, fontWeight:600, marginBottom:8, color:'var(--text-secondary)'}}>Upload Your Design <span style={{color:'var(--error)'}}>*</span></label>
+                      {customImagePreview ? (
+                        <div style={{position:'relative', display:'inline-block'}}>
+                          <img src={customImagePreview} alt="Custom design" style={{width:120, height:120, objectFit:'cover', borderRadius:12, border:'2px solid var(--border)'}} />
+                          <button
+                            type="button"
+                            onClick={handleRemoveCustomImage}
+                            style={{position:'absolute', top:-8, right:-8, background:'var(--error)', color:'#fff', border:'none', borderRadius:'50%', width:24, height:24, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}
+                          >
+                            <X size={14} />
+                          </button>
+                          {uploading && <p style={{fontSize:12, color:'var(--text-secondary)', marginTop:6}}>Uploading...</p>}
+                        </div>
+                      ) : (
+                        <label style={{
+                          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                          gap:8, padding:'28px 20px', border:'2px dashed var(--border)', borderRadius:12,
+                          cursor:'pointer', color:'var(--text-secondary)', fontSize:14,
+                          transition:'border-color 0.2s'
+                        }}>
+                          <Upload size={24} />
+                          <span>Click to upload your logo or design</span>
+                          <span style={{fontSize:11, color:'var(--text-tertiary)'}}>JPG, PNG, WebP — max 10MB</span>
+                          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleCustomFileChange} style={{display:'none'}} />
+                        </label>
+                      )}
+                    </div>
+
+                    <p style={{marginTop:16, fontSize:12, color:'var(--success)', fontWeight:500}}>🎉 Custom printing is FREE — no extra charges!</p>
+                    {!customImageUrl && <p style={{marginTop:8, fontSize:12, color:'var(--error)', fontWeight:500}}>⚠️ Design image is required to add this product to cart</p>}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Actions */}
             <div className="product-actions">
               {product.stock === 0 ? (
@@ -205,8 +328,8 @@ export default function ProductDetail() {
                   ✓ Added to Cart!
                 </button>
               ) : (
-                <button className="btn btn-primary btn-lg" onClick={handleAddToCart}>
-                  <ShoppingBag size={18} /> Add to Cart
+                <button className="btn btn-primary btn-lg" onClick={handleAddToCart} disabled={uploading} style={uploading ? {opacity: 0.7, cursor: 'wait'} : {}}>
+                  <ShoppingBag size={18} /> {uploading ? 'Uploading Design...' : 'Add to Cart'}
                 </button>
               )}
               <button className={`btn-wishlist ${inWishlist ? 'active' : ''}`} onClick={() => toggleWishlist(product)}>

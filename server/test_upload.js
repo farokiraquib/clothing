@@ -16,7 +16,7 @@ async function test() {
   const res = await fetch('http://localhost:5000/api/admin/upload', {
     method: 'POST',
     headers: { 
-      'x-admin-password': 'macmiller2026',
+      'x-admin-password': 'supremeit2026',
       'Content-Type': 'multipart/form-data; boundary=' + boundary 
     },
     body: payload

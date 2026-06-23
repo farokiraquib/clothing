@@ -196,7 +196,7 @@ router.post('/mobile/push-token', async (req, res) => {
       {},
       {
         $addToSet: { expoPushTokens: expoPushToken },
-        $setOnInsert: { name: 'Admin', email: 'admin@macmiller.com', createdAt: new Date() },
+        $setOnInsert: { name: 'Admin', email: 'admin@supremeit.com', createdAt: new Date() },
         $set: { updatedAt: new Date() },
       },
       { upsert: true, returnDocument: 'after' }

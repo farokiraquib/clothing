@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import SEO from '../components/SEO';
 import { API_ROOT } from '../api';
 
 export default function Wishlist() {
@@ -17,7 +18,8 @@ export default function Wishlist() {
 
   if (wishlist.length === 0) return (
     <div className="wishlist-page page-enter">
-      <div className="container">
+      <SEO title="Your Wishlist" noindex />
+      <div className="container" style={{textAlign:'center',padding:'100px 0'}}>
         <div className="wishlist-empty">
           <Heart size={48} style={{color:'var(--text-tertiary)'}} />
           <h2>Your wishlist is empty</h2>
@@ -30,6 +32,7 @@ export default function Wishlist() {
 
   return (
     <div className="wishlist-page page-enter">
+      <SEO title="Your Wishlist" noindex />
       <div className="container">
         <h1>Wishlist</h1>
         <p className="wishlist-count">{wishlistCount} item{wishlistCount !== 1 ? 's' : ''}</p>

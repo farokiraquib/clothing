@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mac_miller_jwt_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'supremeit_jwt_secret_2026';
 
 export function userAuth(req, res, next) {
   const auth = req.headers['authorization'];

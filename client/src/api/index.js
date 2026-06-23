@@ -82,6 +82,9 @@ export const getOrder = (id) => request(`/orders/${id}`);
 export const trackOrder = (orderId) =>
   request(`/orders/track?orderId=${encodeURIComponent(orderId)}`);
 
+export const sendOrderToQikink = (id) =>
+  request(`/orders/${id}/qikink`, { method: 'POST', headers: authHeaders() });
+
 export const updateOrderStatus = (id, data) =>
   request(`/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
 
@@ -134,3 +137,16 @@ export const getMyOrders = (token) =>
 export const getReviews = (productId) => request(`/reviews/${productId}`);
 export const submitReview = (data) =>
   request('/reviews', { method: 'POST', body: JSON.stringify(data) });
+
+// Custom Design Upload
+export const uploadCustomDesign = (file) => {
+  const formData = new FormData();
+  formData.append('design', file);
+  return fetch(`${API_BASE}/custom-upload`, {
+    method: 'POST',
+    body: formData,
+  }).then(r => {
+    if (!r.ok) throw new Error('Upload failed');
+    return r.json();
+  });
+};

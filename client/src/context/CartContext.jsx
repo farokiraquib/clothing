@@ -2,7 +2,7 @@ import { createContext, useContext, useReducer, useEffect } from 'react';
 
 const CartContext = createContext();
 
-const CART_STORAGE_KEY = 'macmiller_cart';
+const CART_STORAGE_KEY = 'supremeit_cart';
 
 function getInitialCart() {
   try {
@@ -16,10 +16,15 @@ function getInitialCart() {
 function cartReducer(state, action) {
   switch (action.type) {
     case 'ADD_ITEM': {
+      // Custom items always create a new entry (never merge)
+      if (action.payload.customText || action.payload.customImage) {
+        return [...state, { ...action.payload, quantity: action.payload.quantity || 1 }];
+      }
       const existing = state.findIndex(
         item => item.id === action.payload.id && 
                 item.selectedSize === action.payload.selectedSize && 
-                item.selectedColor === action.payload.selectedColor
+                item.selectedColor === action.payload.selectedColor &&
+                !item.customText && !item.customImage
       );
       if (existing >= 0) {
         const updated = [...state];
@@ -52,10 +57,10 @@ export function CartProvider({ children }) {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, selectedSize, selectedColor, quantity = 1) => {
+  const addToCart = (product, selectedSize, selectedColor, quantity = 1, customText = '', customImage = '') => {
     dispatch({
       type: 'ADD_ITEM',
-      payload: { ...product, selectedSize, selectedColor, quantity }
+      payload: { ...product, selectedSize, selectedColor, quantity, customText, customImage }
     });
   };
 

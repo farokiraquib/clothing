@@ -1,7 +1,7 @@
 {
-  "name": "mac-miller-server",
+  "name": "supremeit-server",
   "version": "1.0.0",
-  "description": "Mac Miller Clothing Store API",
+  "description": "SupremeIt Clothing Store API",
   "main": "server.js",
   "type": "module",
   "scripts": {

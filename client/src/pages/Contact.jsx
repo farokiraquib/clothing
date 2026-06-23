@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -14,6 +15,7 @@ export default function Contact() {
 
   return (
     <div className="contact-page page-enter">
+      <SEO title="Contact Us" description="Get in touch with the SupremeIt team for any inquiries or support." />
       <div className="container">
         <h1 style={{fontSize:'var(--text-4xl)',fontWeight:800,marginBottom:8,textAlign:'center'}}>Get in Touch</h1>
         <p style={{textAlign:'center',color:'var(--text-secondary)',fontSize:'var(--text-lg)',marginBottom:48}}>We'd love to hear from you</p>
@@ -23,15 +25,11 @@ export default function Contact() {
             <p>Have a question or feedback? Reach out to us through any of these channels.</p>
             <div className="contact-detail">
               <div className="contact-detail-icon"><MapPin size={20} /></div>
-              <div><h4>Address</h4><p>123 Fashion Street, Mumbai, India</p></div>
+              <div><h4>Address</h4><p>near safa masjid milli colony osmanabad</p></div>
             </div>
             <div className="contact-detail">
               <div className="contact-detail-icon"><Phone size={20} /></div>
-              <div><h4>Phone</h4><p>+91 98765 43210</p></div>
-            </div>
-            <div className="contact-detail">
-              <div className="contact-detail-icon"><Mail size={20} /></div>
-              <div><h4>Email</h4><p>hello@macmiller.store</p></div>
+              <div><h4>Phone</h4><p>+91 9422488099</p></div>
             </div>
             <div className="contact-detail">
               <div className="contact-detail-icon"><Clock size={20} /></div>

@@ -18,13 +18,24 @@ const orderSchema = new mongoose.Schema({
     quantity: Number,
     size: String,
     color: String,
-    image: String
+    image: String,
+    customText: String,
+    customImage: String
   }],
   subtotal: { type: Number, required: true },
   shipping: { type: Number, default: 0 },
+  addOns: {
+    rushOrder: { type: Boolean, default: false },
+    boxPacking: { type: Boolean, default: false },
+    totalPrice: { type: Number, default: 0 },
+    gst: { type: Number, default: 0 }
+  },
   total: { type: Number, required: true },
   status: { type: String, default: 'Processing' },
-  paymentStatus: { type: String, default: 'Pending' }
+  paymentStatus: { type: String, default: 'Pending' },
+  qikinkOrderId: { type: String },
+  trackingLink: { type: String },
+  trackingNumber: { type: String }
 }, {
   timestamps: true
 });

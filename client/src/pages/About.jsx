@@ -1,13 +1,15 @@
 import { Sparkles, Heart, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 export default function About() {
   return (
     <div className="about-page page-enter">
+      <SEO title="About Us" description="Learn more about SupremeIt and our mission to curate the best casual fashion." />
       <div className="container">
         <div className="about-hero">
-          <h1>About Mac Miller</h1>
-          <p>We believe great style shouldn't be complicated. Mac Miller curates the best from the world's top brands, making fashion accessible, comfortable, and effortlessly cool.</p>
+          <h1>About SupremeIt</h1>
+          <p>We believe great style shouldn't be complicated. SupremeIt curates the best from the world's top brands, making fashion accessible, comfortable, and effortlessly cool.</p>
         </div>
         <div className="about-values">
           <div className="about-value">

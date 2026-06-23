@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
-        <div className="admin-sidebar-title">Mac Miller Admin</div>
+        <div className="admin-sidebar-title">SupremeIt Admin</div>
         <Link to="/admin/dashboard" className="active"><LayoutDashboard size={18} /> Dashboard</Link>
         <Link to="/admin/products"><Box size={18} /> Products</Link>
         <Link to="/admin/orders"><ClipboardList size={18} /> Orders</Link>

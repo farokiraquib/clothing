@@ -19,7 +19,9 @@ const ProductCard = forwardRef(({ product }, ref) => {
 
   const handleQuickAdd = (e) => {
     e.stopPropagation();
-    if (inCart) {
+    if (product.isCustomizable) {
+      navigate(`/product/${product.id}`);
+    } else if (inCart) {
       navigate('/cart');
     } else {
       addToCart(product, product.sizes[0], product.colors[0]?.name);
@@ -56,7 +58,7 @@ const ProductCard = forwardRef(({ product }, ref) => {
           {product.stock === 0 ? (
             <button disabled style={{cursor: 'not-allowed', background: '#ccc', color: '#666'}}>Sold Out</button>
           ) : (
-            <button onClick={handleQuickAdd}>{inCart ? 'Go to Cart' : 'Quick Add'}</button>
+            <button onClick={handleQuickAdd}>{product.isCustomizable ? 'Customize' : inCart ? 'Go to Cart' : 'Quick Add'}</button>
           )}
         </div>
       </div>

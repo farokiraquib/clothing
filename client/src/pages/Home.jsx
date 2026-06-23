@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, Zap, Clock, Sparkles } from 'lucide-react';
+import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
 import { getFeaturedProducts, getProducts, getNewArrivals, getCategories, getBanners, API_ROOT } from '../api';
 import slide1 from '../assets/hero_slide_1.png';
@@ -245,6 +246,7 @@ export default function Home() {
 
   return (
     <div className="page-enter">
+      <SEO title="Home" />
 
       {/* Promo Strip */}
       <div className="promo-strip">

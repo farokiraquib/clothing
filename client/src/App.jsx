@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
@@ -24,6 +25,8 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminSettings from './pages/admin/AdminSettings';
 
+import { Terms, Privacy, FAQ, SizeGuide, Returns, Shipping, Careers, Press } from './pages/StaticPages';
+
 import './styles/index.css';
 import './styles/navbar.css';
 import './styles/home.css';
@@ -42,6 +45,7 @@ function ScrollToTop() {
 
 function App() {
   return (
+    <HelmetProvider>
     <AuthProvider>
       <UserProvider>
         <CartProvider>
@@ -75,6 +79,14 @@ function App() {
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/track-order" element={<TrackOrder />} />
                       <Route path="/profile" element={<Profile />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/faq" element={<FAQ />} />
+                      <Route path="/size-guide" element={<SizeGuide />} />
+                      <Route path="/returns" element={<Returns />} />
+                      <Route path="/shipping" element={<Shipping />} />
+                      <Route path="/careers" element={<Careers />} />
+                      <Route path="/press" element={<Press />} />
                     </Routes>
                   </main>
                   <Footer />
@@ -86,6 +98,7 @@ function App() {
         </CartProvider>
       </UserProvider>
     </AuthProvider>
+    </HelmetProvider>
   );
 }
 

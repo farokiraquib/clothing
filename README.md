@@ -1,4 +1,4 @@
-# Mac Miller E-Commerce Store
+# SupremeIt E-Commerce Store
 
 ## Local Development  
 ```bash

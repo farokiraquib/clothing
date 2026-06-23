@@ -57,7 +57,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }) {
               {tab === 'login' ? 'Welcome back' : 'Create account'}
             </h2>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              {tab === 'login' ? 'Sign in to your Mac Miller account' : 'Join Mac Miller for a faster checkout'}
+              {tab === 'login' ? 'Sign in to your SupremeIt account' : 'Join SupremeIt for a faster checkout'}
             </p>
           </div>
           <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>

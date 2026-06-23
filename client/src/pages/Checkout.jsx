@@ -4,6 +4,7 @@ import { CreditCard, Smartphone, Building, Wallet, ShieldCheck } from 'lucide-re
 import { useCart } from '../context/CartContext';
 import { useUser } from '../context/UserContext';
 import { createOrder, createRazorpayOrder, verifyRazorpayPayment } from '../api';
+import SEO from '../components/SEO';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
@@ -12,6 +13,8 @@ export default function Checkout() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [form, setForm] = useState({ name:'', email:'', phone:'', address:'', city:'', state:'', pincode:'' });
+  const [rushOrder, setRushOrder] = useState(false);
+  const [boxPacking, setBoxPacking] = useState(false);
 
   // Auto-fill from user profile
   useEffect(() => {
@@ -29,32 +32,49 @@ export default function Checkout() {
     }
   }, [user]);
 
-  const formatPrice = (p) => `₹${p.toLocaleString('en-IN')}`;
-  const shipping = cartTotal > 1999 ? 0 : 99;
+  const formatPrice = (p) => `₹${p.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  const shipping = cartTotal > 1999 ? 0 : 50;
+  
+  const addOnsBase = (rushOrder ? 50 : 0) + (boxPacking ? 15 : 0);
+  const addOnsGst = addOnsBase * 0.18;
+  const addOnsTotal = addOnsBase + addOnsGst;
+  const grandTotal = cartTotal + shipping + addOnsTotal;
 
   const handleChange = (e) => setForm(prev => ({...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate: customizable products must have a design image
+    const missingDesign = cart.find(i => i.isCustomizable && !i.customImage);
+    if (missingDesign) {
+      alert(`"${missingDesign.name}" requires a design image. Please go back and upload your design.`);
+      return;
+    }
     try {
       // 1. Create order in our database
       const order = await createOrder({
         customer: form,
-        items: cart.map(i => ({ productId: i.id, name: i.name, size: i.selectedSize, color: i.selectedColor, quantity: i.quantity, price: i.price })),
+        items: cart.map(i => ({ productId: i.id, name: i.name, size: i.selectedSize, color: i.selectedColor, quantity: i.quantity, price: i.price, customText: i.customText || '', customImage: i.customImage || '' })),
         subtotal: cartTotal,
         shipping,
-        total: cartTotal + shipping
+        addOns: {
+          rushOrder,
+          boxPacking,
+          totalPrice: addOnsTotal,
+          gst: addOnsGst
+        },
+        total: grandTotal
       });
 
       // 2. Create Razorpay order
-      const rzpOrder = await createRazorpayOrder(cartTotal + shipping);
+      const rzpOrder = await createRazorpayOrder(grandTotal);
 
       // 3. Open Razorpay checkout
       const options = {
         key: 'rzp_test_So7egikyu7MjeY',
         amount: rzpOrder.amount,
         currency: rzpOrder.currency,
-        name: 'Mac Miller Store',
+        name: 'SupremeIt Store',
         description: `Order ${order.id}`,
         order_id: rzpOrder.id,
         notes: {
@@ -109,6 +129,7 @@ export default function Checkout() {
 
   if (orderPlaced) return (
     <div className="checkout-page page-enter">
+      <SEO title="Order Placed" noindex />
       <div className="container" style={{textAlign:'center',padding:'80px 0'}}>
         <div style={{width: 80, height: 80, margin: '0 auto 24px', background: 'var(--success)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'}} className="animate-pop">
            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -116,7 +137,7 @@ export default function Checkout() {
            </svg>
         </div>
         <h1 style={{marginBottom:8}} className="animate-pop">Order Placed!</h1>
-        <p style={{color:'var(--text-secondary)',fontSize:18,marginBottom:8}}>Thank you for shopping with Mac Miller.</p>
+        <p style={{color:'var(--text-secondary)',fontSize:18,marginBottom:8}}>Thank you for shopping with SupremeIt.</p>
         <p style={{color:'var(--text-secondary)',marginBottom:32}}>Order ID: <strong>{orderId}</strong></p>
         <div style={{display:'flex', gap:12, justifyContent:'center'}}>
           <Link to="/shop" className="btn btn-outline btn-lg">Continue Shopping</Link>
@@ -128,6 +149,7 @@ export default function Checkout() {
 
   return (
     <div className="checkout-page page-enter">
+      <SEO title="Checkout" noindex />
       <div className="container">
         <h1>Checkout</h1>
         <form onSubmit={handleSubmit}>
@@ -146,7 +168,25 @@ export default function Checkout() {
                 </div>
               </div>
               <div className="checkout-section">
+                <h2>Optional Add-ons</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={rushOrder} onChange={(e) => setRushOrder(e.target.checked)} />
+                    <span style={{ fontWeight: '500' }}>Rush Order (+₹50.00)</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>- Expedited processing & fulfillment</span>
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={boxPacking} onChange={(e) => setBoxPacking(e.target.checked)} />
+                    <span style={{ fontWeight: '500' }}>Premium Box Packing (+₹15.00)</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>- Extra protection & branded presentation</span>
+                  </label>
+                </div>
+              </div>
+              <div className="checkout-section">
                 <h2>Payment Method</h2>
+                <p style={{ fontSize: '14px', color: 'var(--error)', marginBottom: '16px', fontWeight: '500' }}>
+                  Note: As a small brand, we do not currently accept Cash on Delivery (COD). All orders must be prepaid.
+                </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' }}>
                     <ShieldCheck size={24} style={{color: 'var(--success)'}} />
@@ -179,14 +219,35 @@ export default function Checkout() {
             <div className="cart-summary">
               <h3>Order Summary</h3>
               {cart.map((item, i) => (
-                <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',fontSize:14}}>
-                  <span style={{color:'var(--text-secondary)'}}>{item.name} × {item.quantity}</span>
-                  <span>{formatPrice(item.price * item.quantity)}</span>
+                <div key={i} style={{padding:'8px 0',fontSize:14, borderBottom:'1px solid var(--border)'}}>
+                  <div style={{display:'flex',justifyContent:'space-between'}}>
+                    <span style={{color:'var(--text-secondary)'}}>{item.name} × {item.quantity}</span>
+                    <span>{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                  {(item.customText || item.customImage) && (
+                    <div style={{marginTop:4, fontSize:11, color:'var(--text-tertiary)'}}>
+                      <span style={{color:'var(--success)', fontWeight:600}}>✨ Custom</span>
+                      {item.customText && <span> · "{item.customText}"</span>}
+                      {item.customImage && <span> · Design attached</span>}
+                    </div>
+                  )}
                 </div>
               ))}
               <div className="cart-summary-row" style={{marginTop:16}}><span>Subtotal</span><span>{formatPrice(cartTotal)}</span></div>
+              {addOnsBase > 0 && (
+                <>
+                  <div className="cart-summary-row" style={{ color: 'var(--text-secondary)' }}>
+                    <span>Add-ons {rushOrder && boxPacking ? '(Rush + Box)' : (rushOrder ? '(Rush)' : '(Box)')}</span>
+                    <span>{formatPrice(addOnsBase)}</span>
+                  </div>
+                  <div className="cart-summary-row" style={{ color: 'var(--text-secondary)' }}>
+                    <span>Add-ons GST (18%)</span>
+                    <span>{formatPrice(addOnsGst)}</span>
+                  </div>
+                </>
+              )}
               <div className="cart-summary-row"><span>Shipping</span><span>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span></div>
-              <div className="cart-summary-total"><span>Total</span><span>{formatPrice(cartTotal + shipping)}</span></div>
+              <div className="cart-summary-total"><span>Total</span><span>{formatPrice(grandTotal)}</span></div>
               <button type="submit" className="btn btn-primary btn-lg">Place Order</button>
             </div>
           </div>

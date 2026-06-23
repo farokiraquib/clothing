@@ -86,7 +86,7 @@ export default function Navbar() {
 
           {/* CENTER — Logo */}
           <Link to="/" className="navbar-logo">
-            Mac<span>Miller</span>
+            <img src="/logo-full.png" alt="SupremeIt" style={{ height: '60px' }} />
           </Link>
 
           {/* RIGHT — Search + Icons */}

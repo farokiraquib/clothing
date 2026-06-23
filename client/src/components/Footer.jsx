@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <h3>Mac<span>Miller</span></h3>
+            <img src="/logo-full.png" alt="SupremeIt" style={{ height: '60px', marginBottom: '16px' }} />
             <p>Your destination for casual fashion. Curating the best from world-class brands to elevate your everyday style.</p>
             <div className="footer-social">
               <a href="#" aria-label="Instagram"><FaInstagram size={20} /></a>
@@ -28,23 +28,23 @@ export default function Footer() {
             <h4>Company</h4>
             <Link to="/about">About Us</Link>
             <Link to="/contact">Contact</Link>
-            <a href="#">Careers</a>
-            <a href="#">Press</a>
+            <Link to="/careers">Careers</Link>
+            <Link to="/press">Press</Link>
           </div>
           <div className="footer-col">
             <h4>Help</h4>
             <Link to="/track-order">Track Order</Link>
-            <a href="#">Shipping Info</a>
-            <a href="#">Returns</a>
-            <a href="#">Size Guide</a>
-            <a href="#">FAQ</a>
+            <Link to="/shipping">Shipping Info</Link>
+            <Link to="/returns">Returns</Link>
+            <Link to="/size-guide">Size Guide</Link>
+            <Link to="/faq">FAQ</Link>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Mac Miller. All rights reserved.</p>
+          <p>© 2026 SupremeIt. All rights reserved.</p>
           <div className="footer-bottom-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms of Service</Link>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ import adminRouter from './routes/admin.js';
 import reviewsRouter from './routes/reviews.js';
 import authRouter from './routes/auth.js';
 import assistantRouter from './routes/assistant.js';
+import customUploadRouter from './routes/customUpload.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,10 +38,11 @@ app.use('/api/admin', adminRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/assistant', assistantRouter);
+app.use('/api/custom-upload', customUploadRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Mac Miller API is running' });
+  res.json({ status: 'ok', message: 'SupremeIt API is running' });
 });
 
 // Serve frontend in production
@@ -51,5 +53,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Mac Miller API running on port ${PORT}`);
+  console.log(`🚀 SupremeIt API running on port ${PORT}`);
 });

@@ -143,6 +143,19 @@ export default function TrackOrder() {
               </div>
             )}
 
+            {/* Tracking Info (if available) */}
+            {(order.trackingLink || order.trackingNumber) && (
+              <div style={{ padding:'24px 32px', borderBottom:'1px solid var(--border)', background: 'rgba(139, 92, 246, 0.03)' }}>
+                <h3 style={{ fontSize:15, fontWeight:600, marginBottom:12, display: 'flex', alignItems: 'center', gap: 6 }}><Truck size={18} color="var(--accent)" /> Courier Tracking</h3>
+                {order.trackingNumber && <p style={{ fontSize: 14, marginBottom: 8, color: 'var(--text-secondary)' }}>Tracking Number / AWB: <strong style={{ color: 'var(--text-primary)' }}>{order.trackingNumber}</strong></p>}
+                {order.trackingLink && (
+                  <a href={order.trackingLink} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ display: 'inline-flex', padding: '10px 20px', fontSize: 14 }}>
+                    Track via Courier ↗
+                  </a>
+                )}
+              </div>
+            )}
+
             {/* Items */}
             <div style={{ padding:'24px 32px', borderBottom:'1px solid var(--border)' }}>
               <h3 style={{ fontSize:15, fontWeight:600, marginBottom:16 }}>Items Ordered</h3>
