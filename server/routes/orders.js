@@ -298,11 +298,19 @@ router.post('/:id/qikink', adminAuth, async (req, res) => {
         await order.save();
         return res.json({ message: 'Order was already sent to Qikink successfully', qikinkOrderId: 'Duplicate' });
       }
+      apiError.payload = qikinkPayload;
       throw apiError;
     }
   } catch (err) {
-    console.error('Qikink Error:', err);
-    res.status(500).json({ error: 'Failed to send to Qikink', details: err.message });
+    console.error('Qikink Error Details:', err);
+    if (err.payload) {
+      console.error('Qikink Error Payload:', JSON.stringify(err.payload, null, 2));
+    }
+    res.status(500).json({ 
+      error: 'Failed to send to Qikink', 
+      details: err.message,
+      payload: err.payload || null 
+    });
   }
 });
 

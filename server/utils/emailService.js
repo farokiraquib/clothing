@@ -2,10 +2,14 @@ import { Resend } from 'resend';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export const sendOrderConfirmationEmail = async (order) => {
   try {
+    if (!resend) {
+      console.warn('RESEND_API_KEY is not set. Skipping order confirmation email.');
+      return;
+    }
     const templateId = process.env.RESEND_TEMPLATE_ORDER_CONFIRMED;
     if (!templateId) {
       console.warn('RESEND_TEMPLATE_ORDER_CONFIRMED is not set in .env');
@@ -43,6 +47,10 @@ export const sendOrderConfirmationEmail = async (order) => {
 
 export const sendOrderShippedEmail = async (order) => {
   try {
+    if (!resend) {
+      console.warn('RESEND_API_KEY is not set. Skipping order shipped email.');
+      return;
+    }
     const templateId = process.env.RESEND_TEMPLATE_ORDER_SHIPPED;
     if (!templateId) {
       console.warn('RESEND_TEMPLATE_ORDER_SHIPPED is not set in .env');

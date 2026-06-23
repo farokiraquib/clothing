@@ -12,7 +12,10 @@ async function request(url, options = {}) {
   });
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(error.error || 'Something went wrong');
+    const err = new Error(error.error || 'Something went wrong');
+    err.details = error.details;
+    err.payload = error.payload;
+    throw err;
   }
   return res.json();
 }

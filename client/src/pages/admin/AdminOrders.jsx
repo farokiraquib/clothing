@@ -49,7 +49,10 @@ export default function AdminOrders() {
         setSelectedOrder(prev => ({...prev, qikinkOrderId: res.qikinkOrderId}));
         loadOrders(); // Refresh table in background
       } catch (err) {
-        alert('Failed to send to Qikink. ' + (err.response?.data?.error || err.message));
+        console.error('Failed to send to Qikink. Error object:', err);
+        console.error('Error Details:', err.details);
+        console.error('Payload Sent:', err.payload);
+        alert('Failed to send to Qikink. ' + (err.details || err.message));
       }
     }
   };
