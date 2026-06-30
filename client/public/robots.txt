@@ -6,4 +6,4 @@ Disallow: /checkout/
 Disallow: /profile/
 Disallow: /wishlist/
 
-Sitemap: https://supremeit.com/sitemap.xml
+Sitemap: https://supremeit.pixelkite.in/sitemap.xml

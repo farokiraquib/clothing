@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
     
     // Add static pages
-    const staticPages = ['/', '/shop', '/custom-design', '/cart', '/wishlist'];
+    const staticPages = ['/', '/shop', '/custom-design'];
     for (const page of staticPages) {
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}${page}</loc>\n`;
