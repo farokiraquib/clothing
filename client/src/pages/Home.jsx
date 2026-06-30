@@ -358,7 +358,7 @@ export default function Home() {
               return (
                 <Link to={`/shop?category=${cat.id}`} key={cat.id} className="category-card">
                   {cat.image && (cat.image.startsWith('/uploads') || cat.image.startsWith('http')) ? (
-                    <img src={cat.image.startsWith('http') ? cat.image : `${API_ROOT}${cat.image}`} alt={cat.name} className="category-card-img" />
+                    <img src={cat.image.startsWith('http') ? cat.image : `${API_ROOT}${cat.image}`} alt={cat.name} className="category-card-img" loading="lazy" decoding="async" />
                   ) : (
                     <div className="category-card-bg" style={{ background: fb.gradient }} />
                   )}

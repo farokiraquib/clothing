@@ -14,6 +14,7 @@ import reviewsRouter from './routes/reviews.js';
 import authRouter from './routes/auth.js';
 import assistantRouter from './routes/assistant.js';
 import customUploadRouter from './routes/customUpload.js';
+import sitemapRouter from './routes/sitemap.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,6 +40,9 @@ app.use('/api/reviews', reviewsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/assistant', assistantRouter);
 app.use('/api/custom-upload', customUploadRouter);
+
+// Sitemap
+app.use('/sitemap.xml', sitemapRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {

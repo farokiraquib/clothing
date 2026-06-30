@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <img src="/logo-full.png" alt="SupremeIt" style={{ height: '60px', marginBottom: '16px' }} />
+            <img src="/logo-full.png" alt="SupremeIt" style={{ height: '60px', marginBottom: '16px' }} loading="lazy" decoding="async" />
             <p>Your destination for casual fashion. Curating the best from world-class brands to elevate your everyday style.</p>
             <div className="footer-social">
               <a href="#" aria-label="Instagram"><FaInstagram size={20} /></a>

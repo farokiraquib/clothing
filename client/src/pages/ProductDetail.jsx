@@ -182,7 +182,7 @@ export default function ProductDetail() {
                 {product.images.map((img, idx) => (
                   <div key={idx} style={{width:80,height:80,flexShrink:0,cursor:'pointer',border:mainImageIndex === idx ? '2px solid var(--text-primary)' : '2px solid transparent',borderRadius:8,overflow:'hidden'}} onClick={() => scrollToImage(idx)}>
                     {img?.startsWith('http') || img?.startsWith('/uploads') ? (
-                       <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={`${product.name} ${idx}`} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                       <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={`${product.name} ${idx}`} style={{width:'100%',height:'100%',objectFit:'cover'}} loading="lazy" decoding="async" />
                     ) : (
                       <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)'}} />
                     )}
