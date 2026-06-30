@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, Zap, Clock, Sparkles } from 'lucide-react';
 import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
-import { getFeaturedProducts, getProducts, getNewArrivals, getCategories, getBanners, API_ROOT } from '../api';
+import { getFeaturedProducts, getProducts, getNewArrivals, getCategories, getBanners, API_ROOT, getOptimizedImage } from '../api';
 import slide1 from '../assets/hero_slide_1.png';
 import slide2 from '../assets/hero_slide_2.png';
 import slide3 from '../assets/hero_slide_3.png';
@@ -53,7 +53,7 @@ const STATIC_SLIDES = [
 /* Convert a DB banner doc into the slide shape */
 function normalizeBanner(b) {
   return {
-    image: b.url.startsWith('http') ? b.url : `${API_ROOT}${b.url}`,
+    image: getOptimizedImage(b.url, 1200),
     tag: b.tag || '',
     headline: b.headline ? b.headline.split('\n') : [''],
     sub: b.sub || '',
@@ -358,7 +358,7 @@ export default function Home() {
               return (
                 <Link to={`/shop?category=${cat.id}`} key={cat.id} className="category-card">
                   {cat.image && (cat.image.startsWith('/uploads') || cat.image.startsWith('http')) ? (
-                    <img src={cat.image.startsWith('http') ? cat.image : `${API_ROOT}${cat.image}`} alt={cat.name} className="category-card-img" loading="lazy" decoding="async" />
+                    <img src={getOptimizedImage(cat.image, 400)} alt={cat.name} className="category-card-img" loading="lazy" decoding="async" />
                   ) : (
                     <div className="category-card-bg" style={{ background: fb.gradient }} />
                   )}

@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
-import { getProduct, getProducts, getReviews, submitReview, uploadCustomDesign, API_ROOT } from '../api';
+import { getProduct, getProducts, getReviews, submitReview, uploadCustomDesign, API_ROOT, getOptimizedImage } from '../api';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -131,7 +131,7 @@ export default function ProductDetail() {
       <SEO 
         title={product.name} 
         description={product.description || `Buy ${product.name} at SupremeIt. High quality fashion.`} 
-        image={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${API_ROOT}${product.images[0]}`) : undefined}
+        image={product.images && product.images[0] ? getOptimizedImage(product.images[0], 1200) : undefined}
       />
       <div className="container">
         <Link to="/shop" style={{display:'inline-flex',alignItems:'center',gap:8,color:'var(--text-secondary)',fontSize:14,marginBottom:24}}>
@@ -151,7 +151,7 @@ export default function ProductDetail() {
                 {product.images?.length > 0 ? product.images.map((img, i) => (
                   <div key={i} style={{flex:'0 0 100%', width:'100%', height:'100%', scrollSnapAlign:'start'}}>
                     {img?.startsWith('/uploads') || img?.startsWith('http') ? (
-                      <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                      <img src={getOptimizedImage(img, 1200)} alt={product.name} style={{width:'100%',height:'100%',objectFit:'cover'}} />
                     ) : (
                       <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#999',fontWeight:600}}>
                         {product.brand.toUpperCase()}
@@ -182,7 +182,7 @@ export default function ProductDetail() {
                 {product.images.map((img, idx) => (
                   <div key={idx} style={{width:80,height:80,flexShrink:0,cursor:'pointer',border:mainImageIndex === idx ? '2px solid var(--text-primary)' : '2px solid transparent',borderRadius:8,overflow:'hidden'}} onClick={() => scrollToImage(idx)}>
                     {img?.startsWith('http') || img?.startsWith('/uploads') ? (
-                       <img src={img.startsWith('http') ? img : `${API_ROOT}${img}`} alt={`${product.name} ${idx}`} style={{width:'100%',height:'100%',objectFit:'cover'}} loading="lazy" decoding="async" />
+                       <img src={getOptimizedImage(img, 300)} alt={`${product.name} ${idx}`} style={{width:'100%',height:'100%',objectFit:'cover'}} loading="lazy" decoding="async" />
                     ) : (
                       <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)'}} />
                     )}

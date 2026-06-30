@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { API_ROOT } from '../api';
+import { API_ROOT, getOptimizedImage } from '../api';
 import SEO from '../components/SEO';
 
 export default function Cart() {
@@ -35,7 +35,7 @@ export default function Cart() {
               <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="cart-item">
                 <div className="cart-item-image">
                   {item.images?.[0]?.startsWith('/uploads') || item.images?.[0]?.startsWith('http') ? (
-                    <img src={item.images[0].startsWith('http') ? item.images[0] : `${API_ROOT}${item.images[0]}`} alt={item.name} style={{width:'100%',height:'100%',objectFit:'cover'}} loading="lazy" decoding="async" />
+                    <img src={getOptimizedImage(item.images[0], 200)} alt={item.name} style={{width:'100%',height:'100%',objectFit:'cover'}} loading="lazy" decoding="async" />
                   ) : (
                     <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#f0ebe3,#e8e0d2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#999',fontWeight:500}}>
                       {item.brand?.toUpperCase()}

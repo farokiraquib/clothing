@@ -153,3 +153,14 @@ export const uploadCustomDesign = (file) => {
     return r.json();
   });
 };
+
+// Image Optimization
+export const getOptimizedImage = (url, width = 800) => {
+  if (!url) return '';
+  let fullUrl = url.startsWith('http') ? url : `${API_ROOT}${url}`;
+  if (fullUrl.includes('res.cloudinary.com') && fullUrl.includes('/upload/')) {
+    fullUrl = fullUrl.replace(/\/upload\/q_auto\//g, '/upload/');
+    return fullUrl.replace('/upload/', `/upload/f_auto,q_auto,w_${width}/`);
+  }
+  return fullUrl;
+};
