@@ -36,6 +36,7 @@ SupremeIt is a modern, full-stack e-commerce platform designed to provide a prem
 - Cloudinary & Multer for image uploads
 - Google Generative AI (Gemini) for the AI assistant
 
+## 💻 Local Development
 ## ⚙️ Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -71,7 +72,6 @@ RESEND_API_KEY=your_resend_api_key
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-## 💻 Local Development
 
 1. **Install Dependencies**
    Run the following command from the root directory to install dependencies for both frontend and backend:
@@ -93,31 +93,3 @@ GEMINI_API_KEY=your_gemini_api_key
    cd client
    npm run dev
    ```
-
-## 🌐 Deployment on Render.com (Free)
-
-This project is configured for easy deployment on Render.
-
-### Option 1: One-Click Deploy
-1. Push this code to a GitHub repository.
-2. Go to [render.com](https://render.com) → Sign up / Log in.
-3. Click **"New +"** → **"Web Service"**.
-4. Connect your GitHub repo.
-5. Configure:
-   - **Build Command**: `cd client && npm install && npm run build && cd ../server && npm install`
-   - **Start Command**: `cd server && node server.js`
-   - **Root Directory**: *(leave empty)*
-6. Add your Environment Variables in the Render dashboard.
-7. Click **"Create Web Service"**.
-
-### Option 2: Using `render.yaml` (auto-detected)
-Just push to GitHub — Render detects the `render.yaml` file automatically and sets up the services based on its configuration.
-
-### After Deployment
-Your site will be live at: `https://your-app-name.onrender.com`
-
-## ⚠️ Important Notes
-
-- **Free Tier Limitations:** On Render's free tier, the application spins down after 15 minutes of inactivity. The first request after spinning down may take ~30 seconds to load.
-- **File Uploads:** While Cloudinary is set up, make sure your credentials are correct so images persist. Local file uploads on Render's free tier will be lost upon redeployment.
-- **Database:** Use MongoDB Atlas for production to ensure your data is persistent and secure.
