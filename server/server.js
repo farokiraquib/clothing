@@ -49,11 +49,46 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'SupremeIt API is running' });
 });
 
+import fs from 'fs';
+import Product from './models/Product.js';
+
 // Serve frontend in production
 const clientDist = join(__dirname, '..', 'client', 'dist');
 app.use(express.static(clientDist));
-app.get('*', (req, res) => {
-  res.sendFile(join(clientDist, 'index.html'));
+
+app.get('*', async (req, res) => {
+  const indexPath = join(clientDist, 'index.html');
+  // Check if index.html exists (it won't during dev, but will in prod)
+  if (!fs.existsSync(indexPath)) {
+    return res.status(404).send('Frontend not built yet');
+  }
+  
+  let html = fs.readFileSync(indexPath, 'utf-8');
+
+  // Dynamic SEO Injection for Product Pages
+  if (req.path.startsWith('/product/')) {
+    const productId = req.path.split('/')[2];
+    if (productId) {
+      try {
+        const product = await Product.findOne({ id: productId }).lean();
+        if (product) {
+          const title = `${product.name} | SupremeIt`;
+          const description = product.description ? product.description.replace(/"/g, '&quot;') : `Buy ${product.name} at SupremeIt. High quality fashion.`;
+          const image = product.images?.[0] || 'https://supremeit.pixelkite.in/favicon.png';
+          
+          html = html.replace('<title>SupremeIt | Casual Fashion Store</title>', `<title>${title}</title>`);
+          html = html.replace(
+            '<meta name="description" content="SupremeIt - Your destination for casual fashion. Shop curated collections from Nike, Adidas, Zara, Levi\'s and more." />',
+            `<meta name="description" content="${description}" />\n    <meta property="og:title" content="${title}" />\n    <meta property="og:description" content="${description}" />\n    <meta property="og:image" content="${image}" />\n    <meta name="twitter:card" content="summary_large_image" />`
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching product for SEO:', err);
+      }
+    }
+  }
+
+  res.send(html);
 });
 
 app.listen(PORT, '0.0.0.0', () => {
